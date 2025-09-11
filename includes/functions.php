@@ -29,6 +29,7 @@ function verificarLimiteGastos($pdo, $usuario_id, $mes_ano) {
     $stmt->execute([$mes_ano, $usuario_id]);
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
+#manobira
 
 function sanitizeMoney($valor) {
     $valor = str_replace(['R$', 'r$', '.', ','], ['', '', '', '.'], $valor);
