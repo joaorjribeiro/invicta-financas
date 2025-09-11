@@ -49,3 +49,20 @@ CREATE TABLE IF NOT EXISTS transacoes (
     FOREIGN KEY (id_categoria) REFERENCES categorias(id) ON DELETE CASCADE,
     FOREIGN KEY (id_usuario) REFERENCES usuarios(id) ON DELETE CASCADE
 );
+
+CREATE TABLE metas (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    usuario_id INT NOT NULL,
+    mes_ano VARCHAR(7) NOT NULL, -- formato 'YYYY-MM'
+    valor_limite DECIMAL(10,2) NOT NULL,
+    criado_em DATETIME DEFAULT CURRENT_TIMESTAMP
+ );
+ 
+
+ALTER TABLE metas ADD id_categoria INT NOT NULL;
+ALTER TABLE metas
+ADD CONSTRAINT fk_metas_categoria 
+FOREIGN KEY (id_categoria) REFERENCES categorias(id);
+
+
+ALTER TABLE metas CHANGE limite valor_limite DECIMAL(10,2) NOT NULL;
