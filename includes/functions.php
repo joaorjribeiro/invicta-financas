@@ -22,7 +22,7 @@ function verificarLimiteGastos($pdo, $usuario_id, $mes_ano) {
         LEFT JOIN transacoes t ON t.id_categoria = m.id_categoria 
                              AND t.tipo = 'despesa' 
                              AND DATE_FORMAT(t.data_transacao, '%Y-%m') = ?
-        WHERE m.id_usuario = ? 
+        WHERE m.usuario_id = ? 
         GROUP BY m.id_categoria, m.valor_limite
         HAVING total_gasto > m.valor_limite
     ");
