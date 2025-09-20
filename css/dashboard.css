@@ -1,0 +1,134 @@
+/* =========================================================
+   Paleta de cores do Dashboard Invicta
+   ========================================================= */
+
+:root {
+    --laranja-principal: #ef4b2a;
+    --laranja-claro: #ff6a42;
+    --preto-escuro: #0a0706;
+    --cinza-escuro: #464646;
+    --cinza-quase-transparente: rgba(70, 70, 70, 0.8);
+    --texto-claro: #f8f9fa;
+    --texto-escuro: #212529;
+}
+
+body {
+    background-color: #f0f2f5;
+    color: var(--cinza-escuro);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+/* =========================================================
+   Estilos de Layout e Componentes
+   ========================================================= */
+
+/* Estilo do cabeçalho e navegação */
+.header-principal, .footer-principal {
+    background-color: var(--preto-escuro) !important;
+    color: var(--texto-claro) !important;
+}
+
+.navbar {
+    background-color: var(--preto-escuro) !important;
+}
+
+.navbar .nav-link,
+.navbar .navbar-brand {
+    color: var(--texto-claro) !important;
+}
+
+.navbar .nav-link:hover {
+    color: var(--laranja-principal) !important;
+}
+
+/* Estilo para a classe card do Bootstrap */
+.card {
+    background-color: var(--cinza-quase-transparente);
+    border: none;
+    border-radius: 1rem;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+}
+
+.card-title, .card-text {
+    color: var(--texto-escuro);
+}
+
+/* Tabela de Transações */
+.table {
+    --bs-table-bg: transparent;
+    --bs-table-striped-bg: rgba(255, 255, 255, 0.1);
+    --bs-table-striped-color: inherit;
+    --bs-table-active-bg: rgba(255, 255, 255, 0.2);
+    color: var(--cinza-escuro);
+}
+
+.table-responsive {
+    border-radius: 1rem;
+    overflow: hidden;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+/* Cores específicas para Receita e Despesa na tabela */
+.text-success {
+    color: #28a745 !important;
+}
+
+.text-danger {
+    color: #dc3545 !important;
+}
+
+/* Estilo de Botões */
+.btn-primary {
+    background-color: var(--laranja-principal) !important;
+    border-color: var(--laranja-principal) !important;
+    transition: background-color 0.3s ease;
+}
+
+.btn-primary:hover {
+    background-color: var(--laranja-claro) !important;
+    border-color: var(--laranja-claro) !important;
+}
+
+.btn-danger {
+    background-color: #dc3545 !important;
+    border-color: #dc3545 !important;
+}
+
+.btn-danger:hover {
+    background-color: #c82333 !important;
+    border-color: #bd2130 !important;
+}
+
+/* Cores de ícones */
+.bi {
+    margin-right: 0.5rem;
+}
+
+/* =========================================================
+   Estilos do Modo Escuro (Opcional)
+   ========================================================= */
+
+.theme-dark {
+    background-color: #121212;
+    color: var(--texto-claro);
+}
+
+.theme-dark .card {
+    background-color: rgba(0, 0, 0, 0.2);
+    color: var(--texto-claro);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.5);
+}
+
+.theme-dark .form-label,
+.theme-dark .card-title,
+.theme-dark .card-text,
+.theme-dark .table {
+    color: var(--texto-claro);
+}
+
+.theme-dark .table {
+    --bs-table-bg: transparent;
+    --bs-table-striped-bg: rgba(255, 255, 255, 0.05);
+}

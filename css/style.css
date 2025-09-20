@@ -1,0 +1,110 @@
+/* =========================================================
+   Paleta de cores do projeto Invicta
+   ========================================================= */
+
+:root {
+    --laranja-principal: #ef4b2a;
+    --laranja-claro: #ff6a42;
+    --preto-escuro: #0a0706;
+    --cinza-escuro: #464646;
+    --cinza-quase-transparente: rgba(70, 70, 70, 0.8);
+    --texto-claro: #f8f9fa;
+    --texto-escuro: #212529;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background-color: #f0f2f5; /* Um cinza claro para o fundo geral */
+    color: var(--cinza-escuro);
+}
+
+/* =========================================================
+   Estilos específicos para o Index
+   ========================================================= */
+
+/* Seção de Hero (Banner de Boas-Vindas) */
+.hero-section {
+    background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), var(--preto-escuro);
+    background-image: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('https://placehold.co/1200x600/ef4b2a/0a0706?text=Invicta');
+    background-size: cover;
+    background-position: center;
+    padding: 100px 0;
+    color: var(--texto-claro);
+    text-align: center;
+}
+
+.hero-section h1 {
+    font-size: 3.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+}
+
+.hero-section p {
+    font-size: 1.25rem;
+    margin-bottom: 2rem;
+}
+
+/* Cartões de recurso */
+.card {
+    background-color: var(--cinza-quase-transparente);
+    border: none;
+    border-radius: 1rem;
+    box-shadow: 0 0.75rem 1.5rem rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+}
+
+.card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 1rem 2rem rgba(0, 0, 0, 0.2);
+}
+
+/* Botões com o tema laranja */
+.btn-light {
+    background-color: var(--laranja-principal) !important;
+    color: var(--texto-claro) !important;
+    border: 2px solid var(--laranja-principal) !important;
+    font-weight: 600;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.btn-light:hover {
+    background-color: var(--laranja-claro) !important;
+    border-color: var(--laranja-claro) !important;
+}
+
+.btn-outline-light {
+    color: var(--texto-claro) !important;
+    border: 2px solid var(--texto-claro) !important;
+    font-weight: 600;
+    transition: background-color 0.3s ease;
+}
+
+.btn-outline-light:hover {
+    background-color: var(--laranja-principal) !important;
+    border-color: var(--laranja-principal) !important;
+    color: var(--texto-claro) !important;
+}
+
+/* Cores dos ícones */
+.bi-pie-chart-fill.text-primary,
+.bi-bell-fill.text-warning,
+.bi-gear-fill.text-success {
+    color: var(--laranja-principal) !important;
+}
+
+/* Barra de navegação e rodapé */
+header, footer {
+    background-color: var(--preto-escuro) !important;
+    color: var(--texto-claro) !important;
+}
+
+header h2, footer p {
+    color: var(--texto-claro) !important;
+}
+
+footer p {
+    margin: 0;
+}
