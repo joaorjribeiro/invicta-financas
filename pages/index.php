@@ -35,7 +35,7 @@
         <h1 class="text-5xl font-bold mb-4">Bem-vindo à Invicta Finanças</h1>
         <p class="text-lg mb-10 max-w-xl mx-auto">Uma solução simples e prática para gestão financeira pessoal.</p>
         <div class="flex justify-center gap-6">
-            <a href="#"
+            <a href="login.php"
                 class="border-2 border-white px-6 py-3 rounded-md hover:bg-white hover:text-[#ef4b2a] font-semibold transition">Login</a>
             <a href="cadastrar.php"
                 class="border-2 border-white px-6 py-3 rounded-md hover:bg-white hover:text-[#ef4b2a] font-semibold transition">Cadastrar</a>

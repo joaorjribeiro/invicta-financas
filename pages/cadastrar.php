@@ -31,48 +31,58 @@
 
 <body class="bg-crimson-pattern font-sans flex items-center justify-center min-h-screen">
 
-    <div class="bg-white rounded-2xl shadow-lg overflow-hidden w-full max-w-md mx-4">
+    <div class="bg-white rounded-2xl shadow-lg overflow-hidden w-full max-w-md mx-">
         <div class="bg-crimson-500 p-6 text-center">
             <h1 class="text-3xl font-bold text-white">Criar Conta</h1>
             <p class="text-white opacity-90 mt-2">Comece sua jornada financeira com a Invicta Finanças</p>
         </div>
 
-        <div class="p-8 space-y-6">
+        <div class="p-3 space-y-6">
             <form action="#" method="POST" class="space-y-5">
                 <!-- Nome -->
                 <div class="relative">
                     <i data-feather="user" class="absolute left-3 top-3 text-gray-400"></i>
-                    <input type="text" id="nome" name="nome" placeholder="Nome completo"
+                    <input type="text" id="nome" name="nome" placeholder="Nome completo" required
+                        aria-label="Nome completo"
+                        class="w-full pl-10 border-b-2 border-gray-200 py-3 focus:outline-none focus:border-crimson-500 transition">
+                </div>
+
+                <!-- CPF -->
+                <div class="relative">
+                    <i data-feather="credit-card" class="absolute left-3 top-3 text-gray-400"></i>
+                    <input type="text" id="cpf" name="cpf" placeholder="CPF" maxlength="14" required
+                        aria-label="CPF"
                         class="w-full pl-10 border-b-2 border-gray-200 py-3 focus:outline-none focus:border-crimson-500 transition">
                 </div>
 
                 <!-- Email -->
                 <div class="relative">
                     <i data-feather="mail" class="absolute left-3 top-3 text-gray-400"></i>
-                    <input type="email" id="email" name="email" placeholder="Email"
+                    <input type="email" id="email" name="email" placeholder="Email" required aria-label="Email"
                         class="w-full pl-10 border-b-2 border-gray-200 py-3 focus:outline-none focus:border-crimson-500 transition">
                 </div>
 
                 <!-- Senha -->
                 <div class="relative">
                     <i data-feather="lock" class="absolute left-3 top-3 text-gray-400"></i>
-                    <input type="password" id="senha" name="senha" placeholder="Senha"
+                    <input type="password" id="senha" name="senha" placeholder="Senha" required aria-label="Senha"
                         class="w-full pl-10 border-b-2 border-gray-200 py-3 focus:outline-none focus:border-crimson-500 transition">
                 </div>
 
                 <!-- Confirmar Senha -->
                 <div class="relative">
                     <i data-feather="key" class="absolute left-3 top-3 text-gray-400"></i>
-                    <input type="password" id="confirmarSenha" name="confirmarSenha" placeholder="Confirmar Senha"
+                    <input type="password" id="confirmarSenha" name="confirmarSenha" placeholder="Confirmar Senha" required
+                        aria-label="Confirmar Senha"
                         class="w-full pl-10 border-b-2 border-gray-200 py-3 focus:outline-none focus:border-crimson-500 transition">
                 </div>
 
                 <!-- Termos -->
                 <div class="flex items-center">
-                    <input type="checkbox" id="terms" class="rounded text-crimson-500 focus:ring-crimson-500">
+                    <input type="checkbox" id="terms" required class="rounded text-crimson-500 focus:ring-crimson-500">
                     <label for="terms" class="ml-2 text-sm text-gray-600">
-                        Concordo com os <a href="#" class="text-crimson-500 hover:underline">Termos</a> e <a href="#"
-                            class="text-crimson-500 hover:underline">Política de Privacidade</a>
+                        Concordo com os <a href="#" class="text-crimson-500 hover:underline">Termos</a> e
+                        <a href="#" class="text-crimson-500 hover:underline">Política de Privacidade</a>
                     </label>
                 </div>
 
@@ -82,31 +92,31 @@
                     Registrar
                 </button>
             </form>
-
-            <!-- Separator -->
-            <div class="relative flex items-center justify-center my-4">
-                <div class="absolute inset-0 border-t border-gray-200"></div>
-                <span class="relative bg-white px-4 text-gray-500 text-sm">OU CONTINUAR COM</span>
-            </div>
-
-            <!-- Social Login -->
-            <div class="grid grid-cols-2 gap-4">
-                <button
-                    class="border border-gray-200 rounded-lg py-2 flex items-center justify-center hover:bg-gray-50 transition">
-                    <i data-feather="github" class="mr-2"></i> GitHub
-                </button>
-                <button
-                    class="border border-gray-200 rounded-lg py-2 flex items-center justify-center hover:bg-gray-50 transition">
-                    <i data-feather="mail" class="mr-2"></i> Google
-                </button>
-            </div>
-
-            <!-- Link para login -->
-            <p class="text-center text-gray-500 text-sm mt-4">
-                Já tem uma conta?
-                <a href="login.html" class="text-crimson-500 font-medium hover:underline">Entrar</a>
-            </p>
         </div>
+
+        <!-- Separator -->
+        <div class="relative flex items-center justify-center pb-3 my-2">
+            <div class="absolute inset-0 border-t border-gray-200"></div>
+            <span class="relative bg-white px-4 text-gray-500 text-sm">OU CONTINUAR COM</span>
+        </div>
+
+        <!-- Social Login -->
+        <div class="grid grid-cols-2 gap-4">
+            <button
+                class="border border-gray-200 rounded-lg py-2 flex items-center justify-center hover:bg-gray-50 transition">
+                <i data-feather="github" class="mr-2"></i> GitHub
+            </button>
+            <button
+                class="border border-gray-200 rounded-lg py-2 flex items-center justify-center hover:bg-gray-50 transition">
+                <i data-feather="mail" class="mr-2"></i> Google
+            </button>
+        </div>
+
+        <!-- Link para login -->
+        <p class="text-center text-gray-500 text-sm p-5 mt-1">
+            Já tem uma conta?
+            <a href="login.php" class="text-crimson-500 font-medium hover:underline">Entrar</a>
+        </p>
     </div>
 
     <script>
@@ -128,6 +138,17 @@
                     featherIcon.classList.add('text-gray-400');
                 }
             });
+        });
+
+        // Máscara de CPF
+        const cpfInput = document.getElementById('cpf');
+        cpfInput.addEventListener('input', (e) => {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length > 11) value = value.slice(0, 11);
+            value = value.replace(/(\d{3})(\d)/, '$1.$2');
+            value = value.replace(/(\d{3})(\d)/, '$1.$2');
+            value = value.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+            e.target.value = value;
         });
     </script>
 
