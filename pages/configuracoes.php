@@ -32,32 +32,10 @@
 
 <body class="bg-gray-100 dark:bg-gray-900 flex text-gray-900 dark:text-gray-100 transition-colors duration-300">
 
-    <!-- Sidebar -->
-    <aside class="bg-white dark:bg-gray-800 w-64 min-h-screen shadow-lg flex flex-col transition-colors duration-300">
-        <div class="p-6 text-center border-b dark:border-gray-700">
-            <h1 class="text-2xl font-bold text-crimson-500">Invicta</h1>
-            <p class="text-gray-500 dark:text-gray-400 text-sm mt-1">Finanças</p>
-        </div>
-        <nav class="flex-1 p-4 space-y-2">
-            <a href="dashboard.php"
-                class="flex items-center gap-3 p-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700"><i
-                    data-feather="home"></i><span>Dashboard</span></a>
-            <a href="metas.php" class="flex items-center gap-3 p-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700"><i
-                    data-feather="target"></i><span>Metas</span></a>
-            <a href="transacoes.php"
-                class="flex items-center gap-3 p-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700"><i
-                    data-feather="credit-card"></i><span>Transações</span></a>
-            <a href="relatorios.php"
-                class="flex items-center gap-3 p-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700"><i
-                    data-feather="bar-chart-2"></i><span>Relatórios</span></a>
-            <a href="configuracoes.php" class="flex items-center gap-3 p-2 rounded bg-gray-200 dark:bg-gray-700"><i
-                    data-feather="settings"></i><span>Configurações</span></a>
-        </nav>
-        <div class="p-4 border-t dark:border-gray-700">
-            <a href="index.php"
-                class="w-full block text-center bg-crimson-500 text-white py-2 rounded hover:bg-crimson-600 transition">Sair</a>
-        </div>
-    </aside>
+    <?php
+    $activePage = 'configuracoes';
+    include __DIR__ . '/../includes/sidebar.php';
+    ?>
 
     <!-- Main Content -->
     <div class="flex-1 flex flex-col">
