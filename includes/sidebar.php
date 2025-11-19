@@ -1,5 +1,42 @@
 <?php
-// $activePage deve ser definido antes do include
+include __DIR__ . '/auth.php';
+include __DIR__ . '/config.php';
+
+// ID do usuário logado
+$id = $_SESSION['usuario_id'];
+
+// Buscar informações do usuário
+$sql = $pdo->prepare("
+    SELECT 
+        nome_completo,
+        avatar
+    FROM usuarios 
+    WHERE id_usuario = ?
+");
+$sql->execute([$id]);
+$user = $sql->fetch(PDO::FETCH_ASSOC);
+
+// Caminhos corretos
+$avatarURLBase = "../assets/img/";  
+$avatarPathBase = __DIR__ . "/../assets/img/";
+
+if (!empty($user['avatar']) && file_exists($avatarPathBase . $user['avatar'])) {
+    $avatar = $avatarURLBase . $user['avatar'] . "?v=" . time(); // sem cache
+} else {
+    $avatar = $avatarURLBase . "avatar_default.png";
+}
+
+// Se o usuário tiver avatar e o arquivo existir
+if (!empty($user['avatar']) && file_exists($avatarPathBase . $user['avatar'])) {
+    $avatar = $avatarURLBase . $user['avatar'];
+} else {
+    $avatar = $avatarURLBase . "avatar_default.png";
+}
+
+$nome = htmlspecialchars($user['nome_completo'] ?? 'Usuário');
+
+// Nome corrigido vindo da tabela
+$nome = htmlspecialchars($user['nome_completo'] ?? 'Usuário');
 ?>
 
 <aside class="bg-white dark:bg-gray-800 w-64 min-h-screen shadow-lg flex flex-col transition-colors duration-300">

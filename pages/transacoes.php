@@ -79,9 +79,8 @@
 
                 <!-- Perfil -->
                 <div class="flex items-center gap-2">
-                    <img src="https://media.licdn.com/dms/image/v2/D4D03AQEVMRj09hWePQ/profile-displayphoto-scale_400_400/B4DZgek3u7GQAs-/0/1752859647185?e=1762387200&v=beta&t=mY4wYrU8Mvwye5MqIVOxHt1GpOn9FPytDtvUqczD-2w"
-                        alt="Avatar" class="w-10 h-10 rounded-full">
-                    <span class="font-medium">João</span>
+                    <img src="<?= $avatar ?>" alt="Avatar" class="w-10 h-10 rounded-full">
+                    <span class="font-medium"><?= htmlspecialchars($user['nome_completo']) ?></span>
                 </div>
             </div>
         </header>

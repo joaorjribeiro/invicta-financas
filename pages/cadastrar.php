@@ -20,18 +20,19 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $sql = "INSERT INTO Usuarios (nome_completo, email, senha_hash, cpf, aceite_termos)
                 VALUES (?, ?, ?, ?, ?)";
 
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param("ssssi", $nome, $email, $senhaHash, $cpf, $termos);
+        $stmt = $pdo->prepare($sql);
 
-        if ($stmt->execute()) {
+        // Executa apenas UMA vez
+        if ($stmt->execute([$nome, $email, $senhaHash, $cpf, $termos])) {
             header("Location: login.php?registrado=1");
             exit();
         } else {
-            $erro = "Erro ao registrar: " . $stmt->error;
+            $erro = "Erro ao registrar usuário.";
         }
     }
 }
 ?>
+
 
 <!DOCTYPE html>
 <html lang="pt-br">

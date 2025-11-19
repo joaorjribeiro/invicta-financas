@@ -1,3 +1,168 @@
+<?php
+session_start();
+require __DIR__ . '/../includes/config.php';
+require __DIR__ . '/../includes/auth.php';
+
+$id = $_SESSION['usuario_id'];
+
+/* ============================================================
+   SALVAR PERFIL
+============================================================ */
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['salvar_perfil'])) {
+
+    $nome = trim($_POST['nome'] ?? '');
+    $email = trim($_POST['email'] ?? '');
+    $telefone = trim($_POST['telefone'] ?? '');
+
+    if (empty($nome) || empty($email)) {
+        $msgErro = "Nome e e-mail são obrigatórios.";
+    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $msgErro = "E-mail inválido.";
+    } else {
+        $stmt = $pdo->prepare("
+            UPDATE usuarios 
+            SET nome_completo = ?, email = ?, telefone = ? 
+            WHERE id_usuario = ?
+        ");
+        $stmt->execute([$nome, $email, $telefone, $id]);
+        header("Location: configuracoes.php?perfil=ok");
+        exit;
+    }
+}
+
+/* ============================================================
+   ALTERAR SENHA
+============================================================ */
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['alterar_senha'])) {
+
+    $senhaAtual = $_POST['senha_atual'] ?? '';
+    $novaSenha = $_POST['nova_senha'] ?? '';
+    $confirmarSenha = $_POST['confirmar_senha'] ?? '';
+
+    $stmt = $pdo->prepare("SELECT senha_hash FROM usuarios WHERE id_usuario = ?");
+    $stmt->execute([$id]);
+    $senhaHash = $stmt->fetchColumn();
+
+    if (!$senhaHash || !password_verify($senhaAtual, $senhaHash)) {
+        $msgSenhaErro = "Senha atual incorreta.";
+    } elseif (empty($novaSenha)) {
+        $msgSenhaErro = "A nova senha não pode ser vazia.";
+    } elseif ($novaSenha !== $confirmarSenha) {
+        $msgSenhaErro = "A confirmação da nova senha não confere.";
+    } else {
+
+        $novoHash = password_hash($novaSenha, PASSWORD_DEFAULT);
+
+        $stmt = $pdo->prepare("UPDATE usuarios SET senha_hash = ? WHERE id_usuario = ?");
+        $stmt->execute([$novoHash, $id]);
+
+        header("Location: configuracoes.php?senha=ok");
+        exit;
+    }
+}
+
+/* ============================================================
+   BUSCAR DADOS DO USUÁRIO
+============================================================ */
+$sql = $pdo->prepare("
+    SELECT nome_completo, email, telefone, avatar 
+    FROM usuarios 
+    WHERE id_usuario = ?
+");
+$sql->execute([$id]);
+$user = $sql->fetch(PDO::FETCH_ASSOC);
+
+if (!$user) {
+    die("Usuário não encontrado.");
+}
+
+/* ============================================================
+   CONFIGURAÇÃO DOS AVATARES
+============================================================ */
+$avatarPathBase = __DIR__ . "/../assets/img/";
+$avatarURLBase = "../assets/img/";
+
+$avatarDefault = $avatarURLBase . "avatar_default.png";
+
+$avatar = $avatarDefault;
+
+if (!empty($user['avatar']) && file_exists($avatarPathBase . $user['avatar'])) {
+    $avatar = $avatarURLBase . $user['avatar'] . "?v=" . time(); // SEM CACHE
+}
+
+/* ============================================================
+   ALTERAR FOTO DE PERFIL
+============================================================ */
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['salvar_avatar'])) {
+
+    if (!empty($_FILES['avatar']['name']) && $_FILES['avatar']['error'] === 0) {
+
+        $file = $_FILES['avatar'];
+        $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+
+        if (!in_array($ext, ['jpg', 'jpeg', 'png'])) {
+            $msgErro = "Apenas arquivos JPG e PNG são permitidos.";
+        } else {
+
+            $novoNome = "avatar_" . $id . "." . $ext;
+            $destino = $avatarPathBase . $novoNome;
+
+            if (move_uploaded_file($file['tmp_name'], $destino)) {
+
+                $stmt = $pdo->prepare("UPDATE usuarios SET avatar = ? WHERE id_usuario = ?");
+                $stmt->execute([$novoNome, $id]);
+
+                // Reload para pegar imagem nova SEM CACHE
+                header("Location: configuracoes.php?avatar=ok&v=" . time());
+                exit;
+
+            } else {
+                $msgErro = "Falha ao salvar a imagem.";
+            }
+        }
+    } else {
+        $msgErro = "Nenhum arquivo enviado ou erro no upload.";
+    }
+}
+
+/* ============================================================
+   DELETAR CONTA
+============================================================ */
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['deletar_conta'])) {
+
+    // Exclui o avatar, se existir
+    if (!empty($user['avatar'])) {
+        $avatarPath = $avatarPathBase . $user['avatar'];
+        if (file_exists($avatarPath)) {
+            unlink($avatarPath);
+        }
+    }
+
+    // Exclui transações e categorias (se houver foreign key sem ON DELETE CASCADE)
+    $pdo->prepare("DELETE FROM transacoes WHERE id_usuario = ?")->execute([$id]);
+    $pdo->prepare("DELETE FROM categorias WHERE id_usuario = ?")->execute([$id]);
+
+    // Exclui o usuário
+    $pdo->prepare("DELETE FROM usuarios WHERE id_usuario = ?")->execute([$id]);
+
+    // Destroi sessão
+    session_destroy();
+
+    // Redireciona
+    header("Location: ../pages/index.php?conta_deletada=1");
+    exit;
+}
+
+
+/* ============================================================
+   VARIÁVEIS FINAIS PARA EXIBIÇÃO
+============================================================ */
+$nome = htmlspecialchars($user['nome_completo'] ?? '');
+$email = htmlspecialchars($user['email'] ?? '');
+$telefone = htmlspecialchars($user['telefone'] ?? '');
+
+?>
+
 <!DOCTYPE html>
 <html lang="pt-br">
 
@@ -71,58 +236,126 @@
 
                 <!-- Perfil -->
                 <div class="flex items-center gap-2">
-                    <img src="https://media.licdn.com/dms/image/v2/D4D03AQEVMRj09hWePQ/profile-displayphoto-scale_400_400/B4DZgek3u7GQAs-/0/1752859647185?e=1762387200&v=beta&t=mY4wYrU8Mvwye5MqIVOxHt1GpOn9FPytDtvUqczD-2w"
-                        alt="Avatar" class="w-10 h-10 rounded-full">
-                    <span class="font-medium">João</span>
+                    <img src="<?= $avatar ?>" alt="Avatar" class="w-10 h-10 rounded-full">
+                    <span class="font-medium"><?= htmlspecialchars($nome, ENT_QUOTES, 'UTF-8') ?></span>
                 </div>
             </div>
         </header>
 
         <!-- Conteúdo -->
         <main class="p-6 flex-1 overflow-y-auto space-y-6">
-            <!-- Foto de Perfil -->
+
             <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow space-y-4">
                 <h4 class="text-gray-700 dark:text-gray-200 font-semibold text-lg">Foto de Perfil</h4>
-                <div class="flex items-center gap-4">
-                    <img id="profilePreview"
-                        src="https://media.licdn.com/dms/image/v2/D4D03AQEVMRj09hWePQ/profile-displayphoto-scale_400_400/B4DZgek3u7GQAs-/0/1752859647185?e=1762387200&v=beta&t=mY4wYrU8Mvwye5MqIVOxHt1GpOn9FPytDtvUqczD-2w"
-                        alt="Avatar" class="w-20 h-20 rounded-full border border-gray-300 dark:border-gray-600">
-                    <div>
-                        <input id="profileInput" type="file" accept="image/*" class="hidden">
-                        <button onclick="document.getElementById('profileInput').click()"
-                            class="bg-crimson-500 text-white px-4 py-2 rounded hover:bg-crimson-600 transition">Alterar
-                            Foto</button>
-                        <p class="text-gray-500 dark:text-gray-400 text-sm mt-1">Formatos aceitos: JPG, PNG. Máx: 2MB
-                        </p>
+
+                <form method="POST" enctype="multipart/form-data">
+                    <div class="flex items-center gap-4">
+                        <img id="profilePreview" src="<?= htmlspecialchars($avatar, ENT_QUOTES, 'UTF-8') ?>"
+                            class="w-20 h-20 rounded-full border border-gray-300 dark:border-gray-600">
+
+                        <div>
+                            <input id="profileInput" name="avatar" type="file" accept="image/*" class="hidden">
+
+                            <button type="button" onclick="document.getElementById('profileInput').click()"
+                                class="bg-crimson-500 text-white px-4 py-2 rounded hover:bg-crimson-600 transition">
+                                Alterar Foto
+                            </button>
+
+                            <button type="submit" name="salvar_avatar"
+                                class="ml-2 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition">
+                                Salvar Foto
+                            </button>
+
+                            <p class="text-gray-500 dark:text-gray-400 text-sm mt-1">
+                                Formatos aceitos: JPG, PNG. Máx: 2MB
+                            </p>
+                        </div>
                     </div>
-                </div>
+                </form>
             </div>
+
 
             <!-- Perfil -->
             <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow space-y-4">
                 <h4 class="text-gray-700 dark:text-gray-200 font-semibold text-lg">Perfil do Usuário</h4>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-gray-500 dark:text-gray-400 text-sm mb-1">Nome</label>
-                        <input type="text"
-                            class="w-full border border-gray-300 dark:border-gray-600 rounded px-3 py-2 bg-white dark:bg-gray-700"
-                            value="João">
+
+                <!-- Mensagem de sucesso ou erro -->
+                <?php if (!empty($msgSucesso)): ?>
+                    <p class="text-green-600"><?= htmlspecialchars($msgSucesso) ?></p>
+                <?php elseif (!empty($msgErro)): ?>
+                    <p class="text-red-600"><?= htmlspecialchars($msgErro) ?></p>
+                <?php endif; ?>
+
+                <form method="POST">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-gray-500 dark:text-gray-400 text-sm mb-1">Nome</label>
+                            <input type="text" name="nome"
+                                class="w-full border border-gray-300 dark:border-gray-600 rounded px-3 py-2 bg-white dark:bg-gray-700"
+                                value="<?= htmlspecialchars($nome, ENT_QUOTES, 'UTF-8') ?>">
+                        </div>
+
+                        <div>
+                            <label class="block text-gray-500 dark:text-gray-400 text-sm mb-1">Email</label>
+                            <input type="email" name="email"
+                                class="w-full border border-gray-300 dark:border-gray-600 rounded px-3 py-2 bg-white dark:bg-gray-700"
+                                value="<?= htmlspecialchars($email, ENT_QUOTES, 'UTF-8') ?>">
+                        </div>
+
+                        <div>
+                            <label class="block text-gray-500 dark:text-gray-400 text-sm mb-1">Telefone</label>
+                            <input type="tel" name="telefone"
+                                class="w-full border border-gray-300 dark:border-gray-600 rounded px-3 py-2 bg-white dark:bg-gray-700"
+                                value="<?= htmlspecialchars($telefone, ENT_QUOTES, 'UTF-8') ?>">
+                        </div>
                     </div>
-                    <div>
-                        <label class="block text-gray-500 dark:text-gray-400 text-sm mb-1">Email</label>
-                        <input type="email"
-                            class="w-full border border-gray-300 dark:border-gray-600 rounded px-3 py-2 bg-white dark:bg-gray-700"
-                            value="joao@email.com">
+
+                    <button type="submit" name="salvar_perfil"
+                        class="bg-crimson-500 text-white px-4 py-2 rounded hover:bg-crimson-600 transition mt-2">
+                        Salvar Perfil
+                    </button>
+                </form>
+            </div>
+
+            <!-- Alterar senha -->
+            <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow space-y-4">
+                <h4 class="text-gray-700 dark:text-gray-200 font-semibold text-lg">Alterar Senha</h4>
+
+                <!-- Mensagens de erro ou sucesso -->
+                <?php if (!empty($msgSenhaSucesso)): ?>
+                    <p class="text-green-600"><?= htmlspecialchars($msgSenhaSucesso) ?></p>
+                <?php elseif (!empty($msgSenhaErro)): ?>
+                    <p class="text-red-600"><?= htmlspecialchars($msgSenhaErro) ?></p>
+                <?php endif; ?>
+
+                <form method="POST">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-gray-500 dark:text-gray-400 text-sm mb-1">Senha Atual</label>
+                            <input type="password" name="senha_atual"
+                                class="w-full border border-gray-300 dark:border-gray-600 rounded px-3 py-2 bg-white dark:bg-gray-700"
+                                required>
+                        </div>
+                        <div>
+                            <label class="block text-gray-500 dark:text-gray-400 text-sm mb-1">Nova Senha</label>
+                            <input type="password" name="nova_senha"
+                                class="w-full border border-gray-300 dark:border-gray-600 rounded px-3 py-2 bg-white dark:bg-gray-700"
+                                required>
+                        </div>
+                        <div>
+                            <label class="block text-gray-500 dark:text-gray-400 text-sm mb-1">Confirmar Nova
+                                Senha</label>
+                            <input type="password" name="confirmar_senha"
+                                class="w-full border border-gray-300 dark:border-gray-600 rounded px-3 py-2 bg-white dark:bg-gray-700"
+                                required>
+                        </div>
                     </div>
-                    <div>
-                        <label class="block text-gray-500 dark:text-gray-400 text-sm mb-1">Telefone</label>
-                        <input type="tel"
-                            class="w-full border border-gray-300 dark:border-gray-600 rounded px-3 py-2 bg-white dark:bg-gray-700"
-                            value="(11) 99999-9999">
-                    </div>
-                </div>
-                <button class="bg-crimson-500 text-white px-4 py-2 rounded hover:bg-crimson-600 transition mt-2">Salvar
-                    Perfil</button>
+
+                    <button type="submit" name="alterar_senha"
+                        class="bg-crimson-500 text-white px-4 py-2 rounded hover:bg-crimson-600 transition mt-2">
+                        Atualizar Senha
+                    </button>
+                </form>
             </div>
 
             <!-- Notificações -->
@@ -143,39 +376,22 @@
                 </div>
             </div>
 
-            <!-- Alterar senha -->
-            <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow space-y-4">
-                <h4 class="text-gray-700 dark:text-gray-200 font-semibold text-lg">Alterar Senha</h4>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-gray-500 dark:text-gray-400 text-sm mb-1">Senha Atual</label>
-                        <input type="password"
-                            class="w-full border border-gray-300 dark:border-gray-600 rounded px-3 py-2 bg-white dark:bg-gray-700">
-                    </div>
-                    <div>
-                        <label class="block text-gray-500 dark:text-gray-400 text-sm mb-1">Nova Senha</label>
-                        <input type="password"
-                            class="w-full border border-gray-300 dark:border-gray-600 rounded px-3 py-2 bg-white dark:bg-gray-700">
-                    </div>
-                    <div>
-                        <label class="block text-gray-500 dark:text-gray-400 text-sm mb-1">Confirmar Nova Senha</label>
-                        <input type="password"
-                            class="w-full border border-gray-300 dark:border-gray-600 rounded px-3 py-2 bg-white dark:bg-gray-700">
-                    </div>
-                </div>
-                <button
-                    class="bg-crimson-500 text-white px-4 py-2 rounded hover:bg-crimson-600 transition mt-2">Atualizar
-                    Senha</button>
-            </div>
-
             <!-- Deletar conta -->
             <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow space-y-4">
                 <h4 class="text-gray-700 dark:text-gray-200 font-semibold text-lg">Deletar Conta</h4>
-                <p class="text-gray-500 dark:text-gray-400 text-sm">Essa ação é irreversível. Todos os seus dados serão
-                    apagados.</p>
-                <button class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition">Deletar
-                    Conta</button>
+                <p class="text-gray-500 dark:text-gray-400 text-sm">
+                    Essa ação é irreversível. Todos os seus dados serão apagados.
+                </p>
+
+                <form method="POST"
+                    onsubmit="return confirm('Tem certeza que deseja excluir sua conta? Esta ação não pode ser desfeita.')">
+                    <button type="submit" name="deletar_conta"
+                        class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition">
+                        Deletar Conta
+                    </button>
+                </form>
             </div>
+
 
         </main>
     </div>

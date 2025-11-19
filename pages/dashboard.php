@@ -1,8 +1,3 @@
-<?php
-    include '../includes/auth.php';
-    include '../includes/config.php';
-?>
-
 <!DOCTYPE html>
 <html lang="pt-br">
 
@@ -46,12 +41,8 @@
 
 <body class="bg-gray-100 dark:bg-gray-900 flex text-gray-900 dark:text-gray-100 transition-colors duration-300">
 
-
     <?php
-    // ============================================================================
-    // Inclui a barra lateral (sidebar) e define qual página está ativa.
-    // ============================================================================
-    $activePage = 'dashboard'; // ou 'metas', 'transacoes', etc.
+    $activePage = 'dashboard';
     include __DIR__ . '/../includes/sidebar.php';
     ?>
 
@@ -93,9 +84,8 @@
 
                 <!-- Perfil -->
                 <div class="flex items-center gap-2">
-                    <img src="https://media.licdn.com/dms/image/v2/D4D03AQEVMRj09hWePQ/profile-displayphoto-scale_400_400/B4DZgek3u7GQAs-/0/1752859647185?e=1762387200&v=beta&t=mY4wYrU8Mvwye5MqIVOxHt1GpOn9FPytDtvUqczD-2w"
-                        alt="Avatar" class="w-10 h-10 rounded-full">
-                    <span class="font-medium">João</span>
+                    <img src="<?= $avatar ?>" alt="Avatar" class="w-10 h-10 rounded-full">
+                    <span class="font-medium"><?= htmlspecialchars($user['nome_completo']) ?></span>
                 </div>
             </div>
         </header>

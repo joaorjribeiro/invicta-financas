@@ -1,6 +1,6 @@
 <?php
 session_start();
-require '../includes/config.php';
+require '../includes/config.php'; // agora usa $pdo
 
 // Se o usuário já está logado, manda para o dashboard
 if (isset($_SESSION['usuario_id'])) {
@@ -14,20 +14,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $senha = $_POST['senha'];
 
     // Busca usuário no banco
-    $sql = "SELECT id_usuario, senha_hash FROM Usuarios WHERE email = ?";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("s", $email);
-    $stmt->execute();
-    $stmt->store_result();
+    $sql = $pdo->prepare("
+        SELECT id_usuario, senha_hash 
+        FROM usuarios 
+        WHERE email = ?
+    ");
+    $sql->execute([$email]);
+    $user = $sql->fetch(PDO::FETCH_ASSOC);
 
-    // Se o usuário existe
-    if ($stmt->num_rows > 0) {
-        $stmt->bind_result($id_usuario, $senha_hash);
-        $stmt->fetch();
-
-        if (password_verify($senha, $senha_hash)) {
-            // Login OK
-            $_SESSION['usuario_id'] = $id_usuario;
+    if ($user) {
+        // Verifica senha
+        if (password_verify($senha, $user['senha_hash'])) {
+            $_SESSION['usuario_id'] = $user['id_usuario'];
             header("Location: dashboard.php");
             exit();
         } else {
