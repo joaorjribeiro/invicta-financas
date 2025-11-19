@@ -34,7 +34,7 @@
     </nav>
 
     <div class="p-4 border-t dark:border-gray-700">
-        <a href='index.php'
+        <a href='../includes/logout.php'
             class='w-full block text-center bg-crimson-500 text-white py-2 rounded hover:bg-crimson-600 transition'>
             Sair
         </a>

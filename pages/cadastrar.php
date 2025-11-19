@@ -1,3 +1,38 @@
+<?php
+session_start();
+require '../includes/config.php';
+
+if ($_SERVER["REQUEST_METHOD"] === "POST") {
+    $nome = trim($_POST['nome']);
+    $cpf = trim($_POST['cpf']);
+    $email = trim($_POST['email']);
+    $senha = $_POST['senha'];
+    $confirmar = $_POST['confirmarSenha'];
+    $termos = isset($_POST['terms']) ? 1 : 0;
+
+    // Validações
+    if ($senha !== $confirmar) {
+        $erro = "As senhas não conferem!";
+    } else {
+        // Gera hash da senha
+        $senhaHash = password_hash($senha, PASSWORD_DEFAULT);
+
+        $sql = "INSERT INTO Usuarios (nome_completo, email, senha_hash, cpf, aceite_termos)
+                VALUES (?, ?, ?, ?, ?)";
+
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("ssssi", $nome, $email, $senhaHash, $cpf, $termos);
+
+        if ($stmt->execute()) {
+            header("Location: login.php?registrado=1");
+            exit();
+        } else {
+            $erro = "Erro ao registrar: " . $stmt->error;
+        }
+    }
+}
+?>
+
 <!DOCTYPE html>
 <html lang="pt-br">
 
@@ -29,6 +64,14 @@
     </style>
 </head>
 
+<!-- BOTÃO LATERAL VOLTAR -->
+<a href="../pages/index.php" class="fixed left-4 top-1/2 -translate-y-1/2 bg-white shadow-lg border border-gray-200
+          text-gray-700 font-semibold px-4 py-3 rounded-xl flex items-center gap-2
+          hover:bg-gray-100 hover:shadow-xl transition">
+    <i data-feather="arrow-left"></i>
+    Menu
+</a>
+
 <body class="bg-crimson-pattern font-sans flex items-center justify-center min-h-screen">
 
     <div class="bg-white rounded-2xl shadow-lg overflow-hidden w-full max-w-md mx-">
@@ -36,6 +79,10 @@
             <h1 class="text-3xl font-bold text-white">Criar Conta</h1>
             <p class="text-white opacity-90 mt-2">Comece sua jornada financeira com a Invicta Finanças</p>
         </div>
+
+        <?php if (isset($erro)): ?>
+            <p class="text-red-500 text-center font-semibold mb-4"><?= $erro ?></p>
+        <?php endif; ?>
 
         <div class="p-3 space-y-6">
             <form action="#" method="POST" class="space-y-5">
@@ -50,8 +97,7 @@
                 <!-- CPF -->
                 <div class="relative">
                     <i data-feather="credit-card" class="absolute left-3 top-3 text-gray-400"></i>
-                    <input type="text" id="cpf" name="cpf" placeholder="CPF" maxlength="14" required
-                        aria-label="CPF"
+                    <input type="text" id="cpf" name="cpf" placeholder="CPF" maxlength="14" required aria-label="CPF"
                         class="w-full pl-10 border-b-2 border-gray-200 py-3 focus:outline-none focus:border-crimson-500 transition">
                 </div>
 
@@ -72,8 +118,8 @@
                 <!-- Confirmar Senha -->
                 <div class="relative">
                     <i data-feather="key" class="absolute left-3 top-3 text-gray-400"></i>
-                    <input type="password" id="confirmarSenha" name="confirmarSenha" placeholder="Confirmar Senha" required
-                        aria-label="Confirmar Senha"
+                    <input type="password" id="confirmarSenha" name="confirmarSenha" placeholder="Confirmar Senha"
+                        required aria-label="Confirmar Senha"
                         class="w-full pl-10 border-b-2 border-gray-200 py-3 focus:outline-none focus:border-crimson-500 transition">
                 </div>
 

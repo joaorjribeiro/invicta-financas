@@ -1,3 +1,8 @@
+<?php
+    include '../includes/auth.php';
+    include '../includes/config.php';
+?>
+
 <!DOCTYPE html>
 <html lang="pt-br">
 
@@ -189,7 +194,7 @@
             </div>
         </main>
     </div>
-    
+
     <!-- Scripts -->
     <script>
         feather.replace();
