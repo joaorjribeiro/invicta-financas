@@ -103,7 +103,7 @@
     <!-- Equipe -->
     <section id="time" class="bg-white py-28">
         <div class="max-w-5xl mx-auto px-6">
-            <h2 class="text-3xl font-bold mb-12 text-center">Nosso Time</h2>
+            <h2 class="text-3xl font-bold mb-12 text-center">Nossa Equipe</h2>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
                 <!-- João Pedro -->
                 <div
@@ -113,7 +113,9 @@
                     <h3 class="text-xl font-bold mb-1">João Pedro</h3>
                     <p class="text-[#ef4b2a] font-medium mb-4">Full Stack</p>
                     <p class="text-gray-600 mb-4">
-                        Responsável pelo desenvolvimento front-end, incluindo a implementação de funcionalidades, integração de banco de dados e construção da interface do usuário, garantindo uma experiência consistente e eficiente.
+                        Responsável pelo desenvolvimento front-end, incluindo a implementação de funcionalidades,
+                        integração de banco de dados e construção da interface do usuário, garantindo uma experiência
+                        consistente e eficiente.
                     </p>
                     <div class="flex justify-center gap-4">
                         <a href="https://www.linkedin.com/in/jo%C3%A3o-pedro-lemos-ribeiro-49b942228/" target="_blank"
@@ -125,7 +127,7 @@
                         <span
                             class="bg-[#ef4b2a]/10 text-[#ef4b2a] px-3 py-1 rounded-full text-sm font-medium">HTML</span>
                         <span
-                            class="bg-[#ef4b2a]/10 text-[#ef4b2a] px-3 py-1 rounded-full text-sm font-medium">Tailwind</span>
+                            class="bg-[#ef4b2a]/10 text-[#ef4b2a] px-3 py-1 rounded-full text-sm font-medium">TailwindCSS</span>
                         <span
                             class="bg-[#ef4b2a]/10 text-[#ef4b2a] px-3 py-1 rounded-full text-sm font-medium">JavaScript</span>
                         <span
@@ -143,7 +145,8 @@
                     <h3 class="text-xl font-bold mb-1">Wallace</h3>
                     <p class="text-[#ef4b2a] font-medium mb-4">Back-End</p>
                     <p class="text-gray-600 mb-4">
-                        Contribuiu com a modelagem do banco de dados e apoiou o desenvolvimento de funcionalidades do back-end, garantindo a estrutura e suporte necessários para o funcionamento do sistema.
+                        Contribuiu com a modelagem do banco de dados e apoiou o desenvolvimento de funcionalidades do
+                        back-end, garantindo a estrutura e suporte necessários para o funcionamento do sistema.
                     </p>
                     <div class="flex justify-center gap-4">
                         <a href="https://www.linkedin.com/in/wallace-pereira-bb4713296/" target="_blank"

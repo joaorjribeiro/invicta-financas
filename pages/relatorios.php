@@ -98,6 +98,7 @@
                 </div>
             </div>
 
+
             <!-- Cards resumo -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow flex items-center justify-between">
@@ -134,8 +135,35 @@
                     <canvas id="receitasDespesasChart" class="w-full h-64"></canvas>
                 </div>
             </div>
+
+            <!-- Botões de Exportação -->
+            <div class="flex flex-wrap gap-3 mt-4">
+
+                <button
+                    class="flex items-center gap-2 bg-crimson-500 text-white px-4 py-2 rounded hover:bg-crimson-600 transition">
+                    <i data-feather="file-text"></i>
+                    Exportar PDF
+                </button>
+
+                <button
+                    class="flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition">
+                    <i data-feather="file"></i>
+                    Exportar Planilha
+                </button>
+
+                <button
+                    class="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">
+                    <i data-feather="printer"></i>
+                    Imprimir
+                </button>
+
+            </div>
+
         </main>
     </div>
+
+
+
 
     <!-- Scripts -->
     <script>
