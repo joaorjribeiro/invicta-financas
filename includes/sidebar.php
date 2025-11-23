@@ -17,7 +17,7 @@ $sql->execute([$id]);
 $user = $sql->fetch(PDO::FETCH_ASSOC);
 
 // Caminhos corretos
-$avatarURLBase = "../assets/img/";  
+$avatarURLBase = "../assets/img/";
 $avatarPathBase = __DIR__ . "/../assets/img/";
 
 if (!empty($user['avatar']) && file_exists($avatarPathBase . $user['avatar'])) {
@@ -33,8 +33,6 @@ if (!empty($user['avatar']) && file_exists($avatarPathBase . $user['avatar'])) {
     $avatar = $avatarURLBase . "avatar_default.png";
 }
 
-$nome = htmlspecialchars($user['nome_completo'] ?? 'Usuário');
-
 // Nome corrigido vindo da tabela
 $nome = htmlspecialchars($user['nome_completo'] ?? 'Usuário');
 ?>
@@ -49,6 +47,7 @@ $nome = htmlspecialchars($user['nome_completo'] ?? 'Usuário');
         <?php
         $links = [
             'dashboard' => ['url' => 'dashboard.php', 'icon' => 'home', 'label' => 'Dashboard'],
+            'valores' => ['url' => 'valores.php', 'icon' => 'dollar-sign', 'label' => 'Valores'],
             'metas' => ['url' => 'metas.php', 'icon' => 'target', 'label' => 'Metas'],
             'transacoes' => ['url' => 'transacoes.php', 'icon' => 'credit-card', 'label' => 'Transações'],
             'relatorios' => ['url' => 'relatorios.php', 'icon' => 'bar-chart-2', 'label' => 'Relatórios'],

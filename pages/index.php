@@ -108,13 +108,12 @@
                 <!-- João Pedro -->
                 <div
                     class="bg-gray-50 rounded-2xl p-8 text-center shadow-md border border-gray-200 hover:shadow-xl transition-transform hover:-translate-y-2 hover:scale-105">
-                    <img src="https://media.licdn.com/dms/image/v2/D4D03AQEVMRj09hWePQ/profile-displayphoto-scale_400_400/B4DZgek3u7GQAs-/0/1752859647185?e=1762387200&v=beta&t=mY4wYrU8Mvwye5MqIVOxHt1GpOn9FPytDtvUqczD-2w"
-                        alt="João Pedro"
+                    <img src="../assets/img/joao.png" alt="João Pedro"
                         class="w-32 h-32 rounded-full mx-auto mb-4 object-cover border-4 border-[#ef4b2a]">
                     <h3 class="text-xl font-bold mb-1">João Pedro</h3>
-                    <p class="text-[#ef4b2a] font-medium mb-4">Front-End</p>
+                    <p class="text-[#ef4b2a] font-medium mb-4">Full Stack</p>
                     <p class="text-gray-600 mb-4">
-                        Desenvolve a interface do sistema, incluindo layout, responsividade e interações no front-end.
+                        Responsável pelo desenvolvimento front-end, incluindo a implementação de funcionalidades, integração de banco de dados e construção da interface do usuário, garantindo uma experiência consistente e eficiente.
                     </p>
                     <div class="flex justify-center gap-4">
                         <a href="https://www.linkedin.com/in/jo%C3%A3o-pedro-lemos-ribeiro-49b942228/" target="_blank"
@@ -126,25 +125,25 @@
                         <span
                             class="bg-[#ef4b2a]/10 text-[#ef4b2a] px-3 py-1 rounded-full text-sm font-medium">HTML</span>
                         <span
-                            class="bg-[#ef4b2a]/10 text-[#ef4b2a] px-3 py-1 rounded-full text-sm font-medium">CSS</span>
+                            class="bg-[#ef4b2a]/10 text-[#ef4b2a] px-3 py-1 rounded-full text-sm font-medium">Tailwind</span>
                         <span
                             class="bg-[#ef4b2a]/10 text-[#ef4b2a] px-3 py-1 rounded-full text-sm font-medium">JavaScript</span>
                         <span
-                            class="bg-[#ef4b2a]/10 text-[#ef4b2a] px-3 py-1 rounded-full text-sm font-medium">Tailwind</span>
+                            class="bg-[#ef4b2a]/10 text-[#ef4b2a] px-3 py-1 rounded-full text-sm font-medium">SQL</span>
+                        <span
+                            class="bg-[#ef4b2a]/10 text-[#ef4b2a] px-3 py-1 rounded-full text-sm font-medium">PHP</span>
                     </div>
                 </div>
 
                 <!-- Wallace -->
                 <div
                     class="bg-gray-50 rounded-2xl p-8 text-center shadow-md border border-gray-200 hover:shadow-xl transition-transform hover:-translate-y-2 hover:scale-105">
-                    <img src="https://media.licdn.com/dms/image/v2/D4E03AQEG1_00btq2EA/profile-displayphoto-shrink_800_800/profile-displayphoto-shrink_800_800/0/1731462011148?e=1762387200&v=beta&t=IndCbfrURDyR1jm3qTljWiM8QzC_piW-Vavz7FP8Kmk"
-                        alt="Wallace"
+                    <img src="../assets/img/wallace.png" alt="Wallace"
                         class="w-32 h-32 rounded-full mx-auto mb-4 object-cover border-4 border-[#ef4b2a]">
                     <h3 class="text-xl font-bold mb-1">Wallace</h3>
                     <p class="text-[#ef4b2a] font-medium mb-4">Back-End</p>
                     <p class="text-gray-600 mb-4">
-                        Responsável pela lógica do sistema, banco de dados e implementação das funcionalidades
-                        principais.
+                        Contribuiu com a modelagem do banco de dados e apoiou o desenvolvimento de funcionalidades do back-end, garantindo a estrutura e suporte necessários para o funcionamento do sistema.
                     </p>
                     <div class="flex justify-center gap-4">
                         <a href="https://www.linkedin.com/in/wallace-pereira-bb4713296/" target="_blank"
@@ -153,6 +152,8 @@
                             class="text-gray-500 hover:text-[#ef4b2a]"><i data-feather="github"></i></a>
                     </div>
                     <div class="flex flex-wrap justify-center gap-2 mt-4">
+                        <span
+                            class="bg-[#ef4b2a]/10 text-[#ef4b2a] px-3 py-1 rounded-full text-sm font-medium">HTML</span>
                         <span
                             class="bg-[#ef4b2a]/10 text-[#ef4b2a] px-3 py-1 rounded-full text-sm font-medium">SQL</span>
                         <span
