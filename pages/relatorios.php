@@ -36,8 +36,8 @@ $stmt = $pdo->prepare("
 $stmt->execute([$id_usuario, $data_inicio, $data_fim]);
 $totais = $stmt->fetch();
 
-$receitas = (float)$totais['receitas'];
-$despesas = (float)$totais['despesas'];
+$receitas = (float) $totais['receitas'];
+$despesas = (float) $totais['despesas'];
 $saldo = $receitas - $despesas;
 
 // === DESPESAS POR CATEGORIA (gráfico pizza) ===
@@ -62,7 +62,7 @@ for ($i = 5; $i >= 0; $i--) {
     $data = date('Y-m', strtotime("-$i month"));
     $inicio = "$data-01";
     $fim = date('Y-m-t', strtotime($inicio));
-    
+
     $labels_mes[] = date('M', strtotime($inicio));
 
     $stmt = $pdo->prepare("
@@ -73,8 +73,8 @@ for ($i = 5; $i >= 0; $i--) {
     ");
     $stmt->execute([$id_usuario, $inicio, $fim]);
     $row = $stmt->fetch();
-    $receitas_6[] = (float)$row['rec'];
-    $despesas_6[] = (float)$row['desp'];
+    $receitas_6[] = (float) $row['rec'];
+    $despesas_6[] = (float) $row['desp'];
 }
 
 // Buscar saldo do usuário
@@ -175,8 +175,6 @@ $val = $sqlValores->fetch(PDO::FETCH_ASSOC);
 $renda = $val['renda_prevista'] ?? 0;
 $limite = $val['limite_gastos'] ?? 0;
 
-
-
 // NOTIFICAÇÃO DE LIMITE DE GASTOS (para o sininho)
 // =======================
 $mesAtual = date('Y-m');
@@ -192,35 +190,37 @@ if ($porcentagem >= 50) {
 
     if ($porcentagem >= 95) {
         $notifTitulo = "VOCÊ ULTRAPASSOU O LIMITE!";
-        $notifTexto  = "Gastou R$ ".number_format($gastoMes,2,',','.')." de R$ ".number_format($limite,2,',','.');
-        $notifIcone  = "alert-triangle";
-        $notifCor    = "text-red-600";
+        $notifTexto = "Gastou R$ " . number_format($gastoMes, 2, ',', '.') . " de R$ " . number_format($limite, 2, ',', '.');
+        $notifIcone = "alert-triangle";
+        $notifCor = "text-red-600";
     } elseif ($porcentagem >= 90) {
         $notifTitulo = "QUASE NO LIMITE!";
-        $notifTexto  = "Você já usou ".number_format($porcentagem,1)."% do limite.";
-        $notifIcone  = "alert-octagon";
-        $notifCor    = "text-red-500";
+        $notifTexto = "Você já usou " . number_format($porcentagem, 1) . "% do limite.";
+        $notifIcone = "alert-octagon";
+        $notifCor = "text-red-500";
     } elseif ($porcentagem >= 75) {
         $notifTitulo = "Cuidado com os gastos!";
-        $notifTexto  = "Você já gastou ".number_format($porcentagem,1)."% do limite.";
-        $notifIcone  = "bell-ring";
-        $notifCor    = "text-orange-600";
+        $notifTexto = "Você já gastou " . number_format($porcentagem, 1) . "% do limite.";
+        $notifIcone = "bell-ring";
+        $notifCor = "text-orange-600";
     } else {
         $notifTitulo = "Metade do limite alcançada";
-        $notifTexto  = "Você já usou ".number_format($porcentagem,1)."% do orçamento.";
-        $notifIcone  = "bell";
-        $notifCor    = "text-yellow-600";
+        $notifTexto = "Você já usou " . number_format($porcentagem, 1) . "% do orçamento.";
+        $notifIcone = "bell";
+        $notifCor = "text-yellow-600";
     }
 }
-
-
-
-
 ?>
 
 
 <!DOCTYPE html>
 <html lang="pt-br">
+<script>
+    if (localStorage.theme === 'dark') {
+        document.documentElement.classList.add('dark');
+    }
+</script>
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -239,13 +239,20 @@ if ($porcentagem >= 50) {
     </script>
 
     <style>
-        main { transition: font-size 0.25s ease; }
-        #resetText { display: none; }
+        main {
+            transition: font-size 0.25s ease;
+        }
+
+        #resetText {
+            display: none;
+        }
     </style>
 </head>
+
 <body class="bg-gray-100 dark:bg-gray-900 flex text-gray-900 dark:text-gray-100 transition-colors duration-300">
 
-    <?php $activePage = 'relatorios'; include __DIR__ . '/../includes/sidebar.php'; ?>
+    <?php $activePage = 'relatorios';
+    include __DIR__ . '/../includes/sidebar.php'; ?>
 
     <div class="flex-1 flex flex-col">
         <header
@@ -277,52 +284,58 @@ if ($porcentagem >= 50) {
 
                 <!-- Notificações -->
                 <!-- NOTIFICAÇÕES FUNCIONAIS -->
-<div class="relative">
-    <button id="notificacoesBtn" class="relative p-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700 transition" title="Notificações">
-        <i data-feather="bell" class="w-6 h-6 text-gray-600 dark:text-gray-300"></i>
-        <?php if ($totalNotificacoes > 0): ?>
-        <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center animate-pulse">
-            <?= $totalNotificacoes ?>
-        </span>
-        <?php endif; ?>
-    </button>
+                <div class="relative">
+                    <button id="notificacoesBtn"
+                        class="relative p-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700 transition"
+                        title="Notificações">
+                        <i data-feather="bell" class="w-6 h-6 text-gray-600 dark:text-gray-300"></i>
+                        <?php if ($totalNotificacoes > 0): ?>
+                            <span
+                                class="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center animate-pulse">
+                                <?= $totalNotificacoes ?>
+                            </span>
+                        <?php endif; ?>
+                    </button>
 
-    <!-- Dropdown de Notificações -->
-    <div id="notificacoesDropdown" class="absolute right-0 mt-2 w-80 bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 overflow-hidden opacity-0 invisible transition-all duration-300 transform scale-95 origin-top-right z-50">
-        <div class="p-4 border-b dark:border-gray-700 bg-gray-50 dark:bg-gray-900">
-            <h3 class="font-bold text-lg">Notificações</h3>
-        </div>
-        <div class="max-h-96 overflow-y-auto">
-            <?php if ($porcentagem >= 50): ?>
-            <div class="p-4 border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition">
-                <div class="flex items-start gap-3">
-                    <div class="flex-shrink-0 mt-1">
-                        <i data-feather="<?= $notifIcone ?>" class="w-8 h-8 <?= $notifCor ?>"></i>
-                    </div>
-                    <div class="flex-1">
-                        <p class="font-bold text-sm <?= $notifCor ?>"><?= $notifTitulo ?></p>
-                        <p class="text-xs text-gray-600 dark:text-gray-400 mt-1"><?= $notifTexto ?></p>
-                        <div class="text-xs text-gray-500 mt-2">
-                            Gasto: R$ <?= number_format($gastoMes, 2, ',', '.') ?> • 
-                            Limite: R$ <?= number_format($limite, 2, ',', '.') ?>
+                    <!-- Dropdown de Notificações -->
+                    <div id="notificacoesDropdown"
+                        class="absolute right-0 mt-2 w-80 bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 overflow-hidden opacity-0 invisible transition-all duration-300 transform scale-95 origin-top-right z-50">
+                        <div class="p-4 border-b dark:border-gray-700 bg-gray-50 dark:bg-gray-900">
+                            <h3 class="font-bold text-lg">Notificações</h3>
                         </div>
-                        <p class="text-xs text-gray-400 mt-2">Hoje • <?= date('H:i') ?></p>
+                        <div class="max-h-96 overflow-y-auto">
+                            <?php if ($porcentagem >= 50): ?>
+                                <div
+                                    class="p-4 border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition">
+                                    <div class="flex items-start gap-3">
+                                        <div class="flex-shrink-0 mt-1">
+                                            <i data-feather="<?= $notifIcone ?>" class="w-8 h-8 <?= $notifCor ?>"></i>
+                                        </div>
+                                        <div class="flex-1">
+                                            <p class="font-bold text-sm <?= $notifCor ?>"><?= $notifTitulo ?></p>
+                                            <p class="text-xs text-gray-600 dark:text-gray-400 mt-1"><?= $notifTexto ?></p>
+                                            <div class="text-xs text-gray-500 mt-2">
+                                                Gasto: R$ <?= number_format($gastoMes, 2, ',', '.') ?> •
+                                                Limite: R$ <?= number_format($limite, 2, ',', '.') ?>
+                                            </div>
+                                            <p class="text-xs text-gray-400 mt-2">Hoje • <?= date('H:i') ?></p>
+                                        </div>
+                                    </div>
+                                </div>
+                            <?php else: ?>
+                                <div class="p-12 text-center text-gray-500 dark:text-gray-400">
+                                    <i data-feather="bell-off" class="w-16 h-16 mx-auto mb-4 opacity-50"></i>
+                                    <p class="font-medium">Tudo tranquilo!</p>
+                                    <p class="text-sm">Nenhuma notificação no momento.</p>
+                                </div>
+                            <?php endif; ?>
+                        </div>
+                        <div class="p-3 bg-gray-50 dark:bg-gray-900 text-center border-t dark:border-gray-700">
+                            <a href="#" class="text-sm text-crimson-500 hover:text-crimson-600 font-medium">Ver
+                                todas</a>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <?php else: ?>
-            <div class="p-12 text-center text-gray-500 dark:text-gray-400">
-                <i data-feather="bell-off" class="w-16 h-16 mx-auto mb-4 opacity-50"></i>
-                <p class="font-medium">Tudo tranquilo!</p>
-                <p class="text-sm">Nenhuma notificação no momento.</p>
-            </div>
-            <?php endif; ?>
-        </div>
-        <div class="p-3 bg-gray-50 dark:bg-gray-900 text-center border-t dark:border-gray-700">
-            <a href="#" class="text-sm text-crimson-500 hover:text-crimson-600 font-medium">Ver todas</a>
-        </div>
-    </div>
-</div>
 
                 <!-- Perfil -->
                 <div class="flex items-center gap-2">
@@ -335,9 +348,10 @@ if ($porcentagem >= 50) {
         <main class="p-6 flex-1 overflow-y-auto space-y-6">
             <form class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
                 <div class="flex gap-2 w-full md:w-auto">
-                    <input type="month" name="mes" value="<?= $ano . '-' . $mes ?>" 
-                           class="border border-gray-300 dark:border-gray-700 rounded px-3 py-2 bg-white dark:bg-gray-800">
-                    <button type="submit" class="bg-crimson-500 text-white px-4 py-2 rounded hover:bg-crimson-600 transition">
+                    <input type="month" name="mes" value="<?= $ano . '-' . $mes ?>"
+                        class="border border-gray-300 dark:border-gray-700 rounded px-3 py-2 bg-white dark:bg-gray-800">
+                    <button type="submit"
+                        class="bg-crimson-500 text-white px-4 py-2 rounded hover:bg-crimson-600 transition">
                         Filtrar
                     </button>
                 </div>
@@ -347,7 +361,8 @@ if ($porcentagem >= 50) {
                 <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow flex items-center justify-between">
                     <div>
                         <p class="text-gray-500 dark:text-gray-400 text-sm">Total Receitas</p>
-                        <h3 class="text-2xl font-bold text-green-500">R$ <?= number_format($receitas, 2, ',', '.') ?></h3>
+                        <h3 class="text-2xl font-bold text-green-500">R$ <?= number_format($receitas, 2, ',', '.') ?>
+                        </h3>
                     </div>
                     <i data-feather="arrow-up" class="text-gray-400"></i>
                 </div>
@@ -361,7 +376,8 @@ if ($porcentagem >= 50) {
                 <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow flex items-center justify-between">
                     <div>
                         <p class="text-gray-500 dark:text-gray-400 text-sm">Saldo</p>
-                        <h3 class="text-2xl font-bold text-crimson-500">R$ <?= number_format($saldo, 2, ',', '.') ?></h3>
+                        <h3 class="text-2xl font-bold text-crimson-500">R$ <?= number_format($saldo, 2, ',', '.') ?>
+                        </h3>
                     </div>
                     <i data-feather="dollar-sign" class="text-gray-400"></i>
                 </div>
@@ -379,13 +395,16 @@ if ($porcentagem >= 50) {
             </div>
 
             <div class="flex flex-wrap gap-3 mt-4">
-                <button onclick="exportarPDF()" class="flex items-center gap-2 bg-crimson-500 text-white px-4 py-2 rounded hover:bg-crimson-600 transition">
+                <button onclick="exportarPDF()"
+                    class="flex items-center gap-2 bg-crimson-500 text-white px-4 py-2 rounded hover:bg-crimson-600 transition">
                     <i data-feather="file-text"></i> Exportar PDF
                 </button>
-                <button onclick="exportarExcel()" class="flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition">
+                <button onclick="exportarExcel()"
+                    class="flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition">
                     <i data-feather="file"></i> Exportar Planilha
                 </button>
-                <button onclick="window.print()" class="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">
+                <button onclick="window.print()"
+                    class="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">
                     <i data-feather="printer"></i> Imprimir
                 </button>
             </div>
@@ -463,7 +482,7 @@ if ($porcentagem >= 50) {
                 ["Relatório Invicta Finanças"], ["Período: <?= date('m/Y', strtotime($data_inicio)) ?>"],
                 [], ["Receitas", <?= $receitas ?>], ["Despesas", <?= $despesas ?>], ["Saldo", <?= $saldo ?>],
                 [], ["Despesas por Categoria"], ["Categoria", "Valor"],
-                ...<?= json_encode(array_map(fn($c) => [$c['nome_categoria'], (float)$c['total']], $categorias)) ?>
+                ...<?= json_encode(array_map(fn($c) => [$c['nome_categoria'], (float) $c['total']], $categorias)) ?>
             ];
             const ws = XLSX.utils.aoa_to_sheet(data);
             XLSX.utils.book_append_sheet(wb, ws, "Relatório");
@@ -471,30 +490,31 @@ if ($porcentagem >= 50) {
         }
 
         // Dropdown de notificações
-document.getElementById('notificacoesBtn').addEventListener('click', function(e) {
-    e.stopPropagation();
-    const dropdown = document.getElementById('notificacoesDropdown');
-    const isOpen = dropdown.classList.contains('opacity-100');
-    
-    // Fecha todos os dropdowns
-    document.querySelectorAll('[id*="Dropdown"]').forEach(d => {
-        d.classList.remove('opacity-100', 'visible', 'scale-100');
-        d.classList.add('opacity-0', 'invisible', 'scale-95');
-    });
-    
-    if (!isOpen) {
-        dropdown.classList.remove('opacity-0', 'invisible', 'scale-95');
-        dropdown.classList.add('opacity-100', 'visible', 'scale-100');
-        feather.replace();
-    }
-});
+        document.getElementById('notificacoesBtn').addEventListener('click', function (e) {
+            e.stopPropagation();
+            const dropdown = document.getElementById('notificacoesDropdown');
+            const isOpen = dropdown.classList.contains('opacity-100');
 
-// Fecha ao clicar fora
-document.addEventListener('click', () => {
-    document.getElementById('notificacoesDropdown').classList.remove('opacity-100', 'visible', 'scale-100');
-    document.getElementById('notificacoesDropdown').classList.add('opacity-0', 'invisible', 'scale-95');
-});
+            // Fecha todos os dropdowns
+            document.querySelectorAll('[id*="Dropdown"]').forEach(d => {
+                d.classList.remove('opacity-100', 'visible', 'scale-100');
+                d.classList.add('opacity-0', 'invisible', 'scale-95');
+            });
+
+            if (!isOpen) {
+                dropdown.classList.remove('opacity-0', 'invisible', 'scale-95');
+                dropdown.classList.add('opacity-100', 'visible', 'scale-100');
+                feather.replace();
+            }
+        });
+
+        // Fecha ao clicar fora
+        document.addEventListener('click', () => {
+            document.getElementById('notificacoesDropdown').classList.remove('opacity-100', 'visible', 'scale-100');
+            document.getElementById('notificacoesDropdown').classList.add('opacity-0', 'invisible', 'scale-95');
+        });
 
     </script>
 </body>
+
 </html>

@@ -262,11 +262,6 @@ if ($porcentagem >= 50) {
     }
 }
 
-
-
-
-
-
 ?>
 
 <!DOCTYPE html>
@@ -292,7 +287,7 @@ if ($porcentagem >= 50) {
     <div class="flex-1 flex flex-col">
         <header
             class="bg-white dark:bg-gray-800 shadow p-4 flex justify-between items-center transition-colors duration-300">
-            <h2 class="text-xl font-bold">Relatórios</h2>
+            <h2 class="text-xl font-bold">Configurações do Usuário</h2>
 
             <div class="flex items-center gap-3">
                 <!-- Acessibilidade -->
