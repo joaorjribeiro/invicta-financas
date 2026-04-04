@@ -6,9 +6,11 @@ $dbname = getenv('MYSQLDATABASE') ?: 'invicta_financas';
 $port = getenv('MYSQLPORT') ?: '3306';
 
 try {
-    $pdo = new PDO("mysql:host=$host;port=$port;dbname=$dbname;charset=utf8;", $user, $pass, [
+    $dsn = "mysql:host=$host;port=$port;dbname=$dbname;charset=utf8";
+    $pdo = new PDO($dsn, $user, $pass, [
         PDO::ATTR_TIMEOUT => 10,
-        PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8"
+        PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8",
+        PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT => false,
     ]);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 } catch (PDOException $e) {
