@@ -1,11 +1,12 @@
 <?php
-$host = "localhost";
-$user = "root";
-$pass = "";
-$dbname = "invicta_financas";
+$host = getenv('MYSQLHOST') ?: 'localhost';
+$user = getenv('MYSQLUSER') ?: 'root';
+$pass = getenv('MYSQLPASSWORD') ?: '';
+$dbname = getenv('MYSQLDATABASE') ?: 'invicta_financas';
+$port = getenv('MYSQLPORT') ?: '3306';
 
 try {
-    $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8", $user, $pass);
+    $pdo = new PDO("mysql:host=$host;port=$port;dbname=$dbname;charset=utf8", $user, $pass);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 } catch (PDOException $e) {
     die("Erro na conexão: " . $e->getMessage());
