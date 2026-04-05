@@ -1,6 +1,6 @@
 # 💰 Invicta Finanças
 
-Dashboard financeiro pessoal com foco em usabilidade e design intuitivo — do público jovem ao mais experiente.
+Dashboard financeiro pessoal com foco em usabilidade e design intuitivo do público jovem ao mais experiente.
 
 ## 🚀 Funcionalidades
 
