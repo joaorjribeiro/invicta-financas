@@ -1,12 +1,5 @@
 <?php
 
-var_dump(
-    getenv('MYSQLHOST'),
-    getenv('MYSQLPORT'),
-    getenv('MYSQLUSER')
-);
-die();
-
 $host = getenv('MYSQLHOST') ?: 'localhost';
 $user = getenv('MYSQLUSER') ?: 'root';
 $pass = getenv('MYSQLPASSWORD') ?: '';
