@@ -1,4 +1,12 @@
 <?php
+
+var_dump(
+    getenv('MYSQLHOST'),
+    getenv('MYSQLPORT'),
+    getenv('MYSQLUSER')
+);
+die();
+
 $host = getenv('MYSQLHOST') ?: 'localhost';
 $user = getenv('MYSQLUSER') ?: 'root';
 $pass = getenv('MYSQLPASSWORD') ?: '';
@@ -6,11 +14,9 @@ $dbname = getenv('MYSQLDATABASE') ?: 'invicta_financas';
 $port = getenv('MYSQLPORT') ?: '3306';
 
 try {
-    $dsn = "mysql:host=$host;port=$port;dbname=$dbname;charset=utf8";
-    $pdo = new PDO($dsn, $user, $pass, [
+    $pdo = new PDO("mysql:host=$host;port=$port;dbname=$dbname;charset=utf8;", $user, $pass, [
         PDO::ATTR_TIMEOUT => 10,
-        PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8",
-        PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT => false,
+        PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8"
     ]);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 } catch (PDOException $e) {
