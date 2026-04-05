@@ -17,7 +17,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         // Gera hash da senha
         $senhaHash = password_hash($senha, PASSWORD_DEFAULT);
 
-        $sql = "INSERT INTO Usuarios (nome_completo, email, senha_hash, cpf, aceite_termos)
+        $sql = "INSERT INTO usuarios (nome_completo, email, senha_hash, cpf, aceite_termos)
                 VALUES (?, ?, ?, ?, ?)";
 
         $stmt = $pdo->prepare($sql);
