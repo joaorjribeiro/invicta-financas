@@ -1,10 +1,14 @@
 <?php
 
-$host = 'junction.proxy.rlwy.net';
-$port = '14900';
-$user = 'root';
-$pass = 'GxMSPpuyVgMTVTlImAtanQaVaWCRWrac';
-$dbname = 'railway';
+$host = getenv('MYSQLHOST');
+$user = getenv('MYSQLUSER');
+$pass = getenv('MYSQLPASSWORD');
+$dbname = getenv('MYSQLDATABASE');
+$port = getenv('MYSQLPORT');
+
+if (!$host || !$user || !$dbname || !$port) {
+    die("Erro: variáveis de ambiente não configuradas");
+}
 
 try {
     $pdo = new PDO(
