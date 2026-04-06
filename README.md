@@ -2,6 +2,8 @@
 
 Dashboard financeiro pessoal com foco em usabilidade e design intuitivo do público jovem ao mais experiente.
 
+##Link de acesso: invicta-financas-production.up.railway.app
+
 ## 🚀 Funcionalidades
 
 - **Autenticação** — cadastro e login com senha criptografada (bcrypt)
