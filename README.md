@@ -2,7 +2,7 @@
 
 Dashboard financeiro pessoal com foco em usabilidade e design intuitivo do público jovem ao mais experiente.
 
-##Link de acesso: invicta-financas-production.up.railway.app
+##Link de acesso: https://invicta-financas-production.up.railway.app/
 
 ## 🚀 Funcionalidades
 
