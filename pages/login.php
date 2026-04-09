@@ -1,6 +1,6 @@
 <?php
 session_start();
-require '../includes/config.php'; // agora usa fetchOne()
+require '../includes/config.php';
 
 // Se o usuário já está logado, manda para o dashboard
 if (isset($_SESSION['usuario_id'])) {
