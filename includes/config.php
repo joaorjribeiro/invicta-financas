@@ -45,15 +45,16 @@ function getConnection(): PDO
         : PDO::MYSQL_ATTR_INIT_COMMAND;
 
     $options = [
-        PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
-        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-        PDO::ATTR_TIMEOUT            => 5,
-        PDO::ATTR_PERSISTENT         => false,
-        PDO::ATTR_EMULATE_PREPARES   => false,
-        $initCommandKey              => "SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci",
+        PDO::ATTR_ERRMODE                      => PDO::ERRMODE_EXCEPTION,
+        PDO::ATTR_DEFAULT_FETCH_MODE           => PDO::FETCH_ASSOC,
+        PDO::ATTR_TIMEOUT                      => 10,   // ← Railway proxy precisa de mais tempo
+        PDO::ATTR_PERSISTENT                   => false,
+        PDO::ATTR_EMULATE_PREPARES             => false,
+        $initCommandKey                        => "SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci",
+        PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT => false, // ← SSL Railway sem verificação de cert
     ];
 
-    $maxRetries  = 2;
+    $maxRetries  = 3;
     $retryCount  = 0;
     $lastException = null;
 
@@ -75,7 +76,7 @@ function getConnection(): PDO
                 strpos($e->getMessage(), 'timed out')        !== false;
 
             if ($isConnectionError && $retryCount < $maxRetries) {
-                usleep(300_000); // 300ms entre tentativas
+                usleep(500_000); // 500ms entre tentativas (Railway proxy)
                 continue;
             }
 
