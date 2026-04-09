@@ -39,22 +39,26 @@ function getConnection(): PDO
 
     $dsn = "mysql:host={$config['host']};port={$config['port']};dbname={$config['dbname']};charset=utf8mb4";
 
-    // PHP 8.5+: Pdo\Mysql::ATTR_INIT_COMMAND substituiu PDO::MYSQL_ATTR_INIT_COMMAND
-    $initCommandKey = PHP_VERSION_ID >= 80500
-        ? Pdo\Mysql::ATTR_INIT_COMMAND
-        : PDO::MYSQL_ATTR_INIT_COMMAND;
+    // PHP 8.5+: constantes PDO::MYSQL_* foram movidas para Pdo\Mysql::*
+    if (PHP_VERSION_ID >= 80500) {
+        $initCommandKey = Pdo\Mysql::ATTR_INIT_COMMAND;
+        $sslVerifyKey   = Pdo\Mysql::ATTR_SSL_VERIFY_SERVER_CERT;
+    } else {
+        $initCommandKey = PDO::MYSQL_ATTR_INIT_COMMAND;
+        $sslVerifyKey   = PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT;
+    }
 
     $options = [
-        PDO::ATTR_ERRMODE                      => PDO::ERRMODE_EXCEPTION,
-        PDO::ATTR_DEFAULT_FETCH_MODE           => PDO::FETCH_ASSOC,
-        PDO::ATTR_TIMEOUT                      => 10,   // ← Railway proxy precisa de mais tempo
-        PDO::ATTR_PERSISTENT                   => false,
-        PDO::ATTR_EMULATE_PREPARES             => false,
-        $initCommandKey                        => "SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci",
-        PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT => false, // ← SSL Railway sem verificação de cert
+        PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+        PDO::ATTR_TIMEOUT            => 8,
+        PDO::ATTR_PERSISTENT         => false,
+        PDO::ATTR_EMULATE_PREPARES   => false,
+        $initCommandKey              => "SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci",
+        $sslVerifyKey                => false, // SSL Railway sem verificação de cert
     ];
 
-    $maxRetries  = 3;
+    $maxRetries    = 2;  // 2 tentativas × (8s timeout + 500ms delay) = ~17s máximo
     $retryCount  = 0;
     $lastException = null;
 
