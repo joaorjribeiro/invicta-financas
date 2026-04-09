@@ -1,6 +1,6 @@
 <?php
 session_start();
-require '../includes/config.php'; // agora usa $pdo
+require '../includes/config.php'; // agora usa fetchOne()
 
 // Se o usuário já está logado, manda para o dashboard
 if (isset($_SESSION['usuario_id'])) {
@@ -14,13 +14,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $senha = $_POST['senha'];
 
     // Busca usuário no banco
-    $sql = $pdo->prepare("
+    $user = fetchOne("
         SELECT id_usuario, senha_hash 
         FROM usuarios 
         WHERE email = ?
-    ");
-    $sql->execute([$email]);
-    $user = $sql->fetch(PDO::FETCH_ASSOC);
+    ", [$email]);
 
     if ($user) {
         // Verifica senha
@@ -145,7 +143,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <script>
         feather.replace();
 
-        // Mudar cor do ícone ao focar
         document.querySelectorAll('input').forEach(input => {
             input.addEventListener('focus', () => {
                 const featherIcon = input.previousElementSibling;
