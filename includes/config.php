@@ -4,15 +4,20 @@ ini_set('display_errors', 1);
 error_reporting(E_ALL);
 
 /**
- * Configuração de conexão PDO - Versão robusta
+ * Configuração de conexão PDO
  */
-function getConnection()
+function getConnection(): PDO
 {
     static $pdo = null;
 
-    // Retorna a conexão já existente (evita reconectar desnecessariamente)
+    // Retorna conexão válida já existente
     if ($pdo !== null) {
-        return $pdo;
+        try {
+            $pdo->query('SELECT 1'); // Verifica se ainda está ativa
+            return $pdo;
+        } catch (PDOException $e) {
+            $pdo = null; // Conexão morta — reconecta
+        }
     }
 
     // Carrega variáveis de ambiente
@@ -24,24 +29,33 @@ function getConnection()
         'dbname' => getenv('MYSQLDATABASE'),
     ];
 
-    // Validação clara das variáveis obrigatórias
-    if (empty($config['host']) || empty($config['user']) || empty($config['dbname']) || empty($config['port'])) {
-        throw new Exception("❌ Variáveis de ambiente do banco não configuradas corretamente.\nVerifique: MYSQLHOST, MYSQLUSER, MYSQLPASSWORD, MYSQLDATABASE e MYSQLPORT");
+    // Validação das variáveis obrigatórias
+    $missing = array_filter(['MYSQLUSER' => $config['user'], 'MYSQLDATABASE' => $config['dbname']], fn($v) => empty($v));
+    if (!empty($missing)) {
+        throw new RuntimeException(
+            "❌ Variáveis de ambiente não configuradas: " . implode(', ', array_keys($missing))
+        );
     }
 
     $dsn = "mysql:host={$config['host']};port={$config['port']};dbname={$config['dbname']};charset=utf8mb4";
 
+    // PHP 8.5+: Pdo\Mysql::ATTR_INIT_COMMAND substituiu PDO::MYSQL_ATTR_INIT_COMMAND
+    $initCommandKey = PHP_VERSION_ID >= 80500
+        ? Pdo\Mysql::ATTR_INIT_COMMAND
+        : PDO::MYSQL_ATTR_INIT_COMMAND;
+
     $options = [
         PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
         PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-        PDO::ATTR_TIMEOUT            => 15,       
+        PDO::ATTR_TIMEOUT            => 5,
         PDO::ATTR_PERSISTENT         => false,
-        PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8mb4",
         PDO::ATTR_EMULATE_PREPARES   => false,
+        $initCommandKey              => "SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci",
     ];
 
-    $maxRetries = 3;
-    $retryCount = 0;
+    $maxRetries  = 2;
+    $retryCount  = 0;
+    $lastException = null;
 
     while ($retryCount < $maxRetries) {
         try {
@@ -49,43 +63,55 @@ function getConnection()
             return $pdo;
 
         } catch (PDOException $e) {
+            $pdo           = null;
+            $lastException = $e;
             $retryCount++;
 
-            // Erros comuns de conexão que valem retry
-            $isConnectionError = 
-                $e->getCode() == 2006 || 
-                $e->getCode() == 2002 ||
-                strpos($e->getMessage(), 'greeting packet') !== false ||
-                strpos($e->getMessage(), 'gone away') !== false ||
-                strpos($e->getMessage(), 'Connection refused') !== false;
+            $isConnectionError =
+                in_array($e->getCode(), [2002, 2006, 2013]) ||
+                strpos($e->getMessage(), 'greeting packet')  !== false ||
+                strpos($e->getMessage(), 'gone away')        !== false ||
+                strpos($e->getMessage(), 'Connection refused') !== false ||
+                strpos($e->getMessage(), 'timed out')        !== false;
 
             if ($isConnectionError && $retryCount < $maxRetries) {
-                sleep(1); // Aguarda 1 segundo antes de tentar novamente
+                usleep(300_000); // 300ms entre tentativas
                 continue;
             }
 
-            // Log detalhado antes de lançar o erro
-            logError($e, "Falha ao conectar ao banco de dados", ['dsn' => $dsn, 'retry' => $retryCount]);
-            throw $e;
+            break;
         }
     }
+
+    logError($lastException, "Falha ao conectar ao banco de dados", [
+        'host'  => $config['host'],
+        'port'  => $config['port'],
+        'db'    => $config['dbname'],
+        'retry' => $retryCount,
+    ]);
+
+    throw $lastException;
 }
 
 /**
- * Executa uma query com preparação e retry automático em caso de "server has gone away"
+ * Executa uma query com preparação e retry automático em caso de conexão perdida
  */
-function query($sql, $params = [], $retry = true)
+function query(string $sql, array $params = [], bool $retry = true): PDOStatement
 {
     try {
-        $pdo = getConnection();
+        $pdo  = getConnection();
         $stmt = $pdo->prepare($sql);
         $stmt->execute($params);
         return $stmt;
 
     } catch (PDOException $e) {
-        // Retry automático para erro 2006 (MySQL server has gone away)
-        if ($retry && ($e->getCode() == 2006 || strpos($e->getMessage(), 'gone away') !== false)) {
-            return query($sql, $params, false); // Tenta uma vez sem retry
+        // Retry automático para conexão perdida (erro 2006)
+        if ($retry && (
+            $e->getCode() == 2006 ||
+            strpos($e->getMessage(), 'gone away') !== false ||
+            strpos($e->getMessage(), 'Lost connection') !== false
+        )) {
+            return query($sql, $params, false);
         }
 
         logError($e, $sql, $params);
@@ -94,38 +120,71 @@ function query($sql, $params = [], $retry = true)
 }
 
 /**
- * Funções auxiliares
+ * Retorna todos os resultados de uma query
  */
-function fetchAll($sql, $params = [])
+function fetchAll(string $sql, array $params = []): array
 {
     return query($sql, $params)->fetchAll();
 }
 
-function fetchOne($sql, $params = [])
+/**
+ * Retorna apenas a primeira linha de uma query
+ */
+function fetchOne(string $sql, array $params = []): array|false
 {
     return query($sql, $params)->fetch();
 }
 
-function execute($sql, $params = [])
+/**
+ * Executa uma query e retorna o número de linhas afetadas
+ */
+function execute(string $sql, array $params = []): int
 {
     return query($sql, $params)->rowCount();
 }
 
 /**
- * Logging de erros 
+ * Retorna o último ID inserido
  */
-function logError($e, $sql, $params = [])
+function lastInsertId(): string
+{
+    return getConnection()->lastInsertId();
+}
+
+/**
+ * Executa um bloco dentro de uma transação, com rollback automático em caso de erro
+ */
+function transaction(callable $callback): mixed
+{
+    $pdo = getConnection();
+    $pdo->beginTransaction();
+
+    try {
+        $result = $callback($pdo);
+        $pdo->commit();
+        return $result;
+    } catch (Throwable $e) {
+        $pdo->rollBack();
+        logError($e, "Erro durante transação");
+        throw $e;
+    }
+}
+
+/**
+ * Logging estruturado de erros no error_log do PHP
+ */
+function logError(Throwable $e, string $context = '', array $extra = []): void
 {
     $log = [
         'timestamp' => date('Y-m-d H:i:s'),
+        'context'   => $context,
         'error'     => $e->getMessage(),
         'code'      => $e->getCode(),
         'file'      => $e->getFile(),
         'line'      => $e->getLine(),
-        'sql'       => $sql,
-        'params'    => $params,
-        'trace'     => $e->getTraceAsString()
+        'extra'     => $extra,
+        'trace'     => $e->getTraceAsString(),
     ];
 
-    error_log(json_encode($log, JSON_UNESCAPED_UNICODE));
+    error_log('[DB] ' . json_encode($log, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
 }
