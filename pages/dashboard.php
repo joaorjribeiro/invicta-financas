@@ -11,8 +11,8 @@ $stmtUser = $pdo->prepare("SELECT nome_completo, avatar FROM usuarios WHERE id_u
 $stmtUser->execute([$id_usuario]);
 $user = $stmtUser->fetch(PDO::FETCH_ASSOC);
 
-$avatar = (!empty($user['avatar'])) 
-    ? '/assets/img/' . $user['avatar'] 
+$avatar = (!empty($user['avatar']))
+    ? '/assets/img/' . $user['avatar']
     : '/assets/default-avatar.png';
 
 // =======================
@@ -27,9 +27,9 @@ $sqlValores = $pdo->prepare("
 $sqlValores->execute([$id_usuario]);
 $valores = $sqlValores->fetch(PDO::FETCH_ASSOC) ?: [];
 
-$saldo_inicial = (float)($valores['saldo_inicial'] ?? 0);
-$renda         = (float)($valores['renda_prevista'] ?? 0);
-$limite        = (float)($valores['limite_gastos'] ?? 0);
+$saldo_inicial = (float) ($valores['saldo_inicial'] ?? 0);
+$renda = (float) ($valores['renda_prevista'] ?? 0);
+$limite = (float) ($valores['limite_gastos'] ?? 0);
 
 // =======================
 // Saldo Atual REAL (Saldo Inicial + Entradas - Saídas)
@@ -42,7 +42,7 @@ $sqlSaldo = $pdo->prepare("
     WHERE id_usuario = ?
 ");
 $sqlSaldo->execute([$id_usuario]);
-$movimentacao = (float)$sqlSaldo->fetchColumn();
+$movimentacao = (float) $sqlSaldo->fetchColumn();
 
 $saldo_atual = $saldo_inicial + $movimentacao;
 
@@ -120,7 +120,7 @@ $stmtGasto = $pdo->prepare("
       AND DATE_FORMAT(data_transacao, '%Y-%m') = ?
 ");
 $stmtGasto->execute([$id_usuario, $mesAtual]);
-$gastoMes = (float)$stmtGasto->fetchColumn();
+$gastoMes = (float) $stmtGasto->fetchColumn();
 
 $porcentagem = $limite > 0 ? ($gastoMes / $limite) * 100 : 0;
 $totalNotificacoes = ($porcentagem >= 50) ? 1 : 0;
@@ -189,6 +189,16 @@ if ($porcentagem >= 50) {
     ?>
 
     <div class="flex-1 flex flex-col">
+        <!-- Cards -->
+        <div class="bg-white..." data-tour="saldo"> ... </div>
+        <div class="bg-white..." data-tour="renda"> ... </div>
+        <div class="bg-white..." data-tour="limite"> ... </div>
+
+        <!-- Seções -->
+        <div class="bg-white..." data-tour="metas"> ... </div>
+        <canvas id="despesasChart" data-tour="grafico-despesas"></canvas>
+        <canvas id="receitasChart" data-tour="grafico-receitas"></canvas>
+        <div class="bg-white..." data-tour="ultimas-transacoes"> ... </div>
         <!-- Topbar -->
         <header class="bg-white dark:bg-gray-800 shadow p-4 flex justify-between items-center">
             <h2 class="text-xl font-bold">Dashboard</h2>
@@ -196,41 +206,50 @@ if ($porcentagem >= 50) {
             <div class="flex items-center gap-3">
                 <!-- Acessibilidade, Dark Mode, Notificações e Perfil permanecem iguais -->
                 <div class="flex items-center gap-2">
-                    <button id="increaseText" class="p-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700 transition" title="Aumentar fonte">
+                    <button id="increaseText" class="p-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700 transition"
+                        title="Aumentar fonte">
                         <i data-feather="zoom-in" class="text-gray-600 dark:text-gray-300"></i>
                     </button>
-                    <button id="decreaseText" class="p-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700 transition" title="Diminuir fonte">
+                    <button id="decreaseText" class="p-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700 transition"
+                        title="Diminuir fonte">
                         <i data-feather="zoom-out" class="text-gray-600 dark:text-gray-300"></i>
                     </button>
-                    <button id="resetText" class="p-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700 transition" title="Redefinir tamanho da fonte">
+                    <button id="resetText" class="p-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700 transition"
+                        title="Redefinir tamanho da fonte">
                         <i data-feather="refresh-ccw" class="text-gray-600 dark:text-gray-300"></i>
                     </button>
                 </div>
 
-                <button id="darkToggle" class="p-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700 transition" title="Alternar modo escuro">
+                <button id="darkToggle" class="p-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700 transition"
+                    title="Alternar modo escuro">
                     <i data-feather="moon" class="text-gray-600 dark:text-gray-300"></i>
                 </button>
 
                 <!-- Notificações -->
                 <div class="relative">
-                    <button id="notificacoesBtn" class="relative p-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700 transition" title="Notificações">
+                    <button id="notificacoesBtn"
+                        class="relative p-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700 transition"
+                        title="Notificações">
                         <i data-feather="bell" class="w-6 h-6 text-gray-600 dark:text-gray-300"></i>
                         <?php if ($totalNotificacoes > 0): ?>
-                            <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center animate-pulse">
+                            <span
+                                class="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center animate-pulse">
                                 <?= $totalNotificacoes ?>
                             </span>
                         <?php endif; ?>
                     </button>
 
                     <!-- Dropdown de Notificações (mantido igual) -->
-                    <div id="notificacoesDropdown" class="absolute right-0 mt-2 w-80 bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 overflow-hidden opacity-0 invisible transition-all duration-300 transform scale-95 origin-top-right z-50">
+                    <div id="notificacoesDropdown"
+                        class="absolute right-0 mt-2 w-80 bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 overflow-hidden opacity-0 invisible transition-all duration-300 transform scale-95 origin-top-right z-50">
                         <!-- ... conteúdo do dropdown permanece igual ao seu código original ... -->
                         <div class="p-4 border-b dark:border-gray-700 bg-gray-50 dark:bg-gray-900">
                             <h3 class="font-bold text-lg">Notificações</h3>
                         </div>
                         <div class="max-h-96 overflow-y-auto">
                             <?php if ($porcentagem >= 50): ?>
-                                <div class="p-4 border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition">
+                                <div
+                                    class="p-4 border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition">
                                     <div class="flex items-start gap-3">
                                         <div class="flex-shrink-0 mt-1">
                                             <i data-feather="<?= $notifIcone ?>" class="w-8 h-8 <?= $notifCor ?>"></i>
@@ -255,7 +274,8 @@ if ($porcentagem >= 50) {
                             <?php endif; ?>
                         </div>
                         <div class="p-3 bg-gray-50 dark:bg-gray-900 text-center border-t dark:border-gray-700">
-                            <a href="#" class="text-sm text-crimson-500 hover:text-crimson-600 font-medium">Ver todas</a>
+                            <a href="#" class="text-sm text-crimson-500 hover:text-crimson-600 font-medium">Ver
+                                todas</a>
                         </div>
                     </div>
                 </div>
@@ -299,7 +319,8 @@ if ($porcentagem >= 50) {
                     <div class="mb-3">
                         <p class="text-sm"><?= htmlspecialchars($meta['nome_meta']) ?></p>
                         <div class="w-full bg-gray-300 h-3 rounded-full mt-1">
-                            <div class="bg-crimson-500 h-3 rounded-full" data-width="<?= round($meta['progresso']) ?>%" style="width:0"></div>
+                            <div class="bg-crimson-500 h-3 rounded-full" data-width="<?= round($meta['progresso']) ?>%"
+                                style="width:0"></div>
                         </div>
                         <p class="text-sm mt-1">Progresso: <?= round($meta['progresso']) ?>%</p>
                     </div>
@@ -325,7 +346,8 @@ if ($porcentagem >= 50) {
                 <div class="overflow-x-auto">
                     <table class="w-full text-left border-collapse">
                         <thead>
-                            <tr class="text-gray-600 dark:text-gray-300 text-sm border-b border-gray-300 dark:border-gray-700">
+                            <tr
+                                class="text-gray-600 dark:text-gray-300 text-sm border-b border-gray-300 dark:border-gray-700">
                                 <th class="py-2 px-3">Data</th>
                                 <th class="py-2 px-3">Descrição</th>
                                 <th class="py-2 px-3">Valor</th>
@@ -334,10 +356,12 @@ if ($porcentagem >= 50) {
                         </thead>
                         <tbody class="text-gray-700 dark:text-gray-200">
                             <?php foreach ($ultimasTransacoes as $t): ?>
-                                <tr class="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/40 transition">
+                                <tr
+                                    class="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/40 transition">
                                     <td class="py-2 px-3"><?= date('d/m/Y', strtotime($t['data_transacao'])) ?></td>
                                     <td class="py-2 px-3"><?= htmlspecialchars($t['descricao']) ?></td>
-                                    <td class="py-2 px-3 font-medium <?= $t['tipo'] == 'Entrada' ? 'text-green-500' : 'text-red-500' ?>">
+                                    <td
+                                        class="py-2 px-3 font-medium <?= $t['tipo'] == 'Entrada' ? 'text-green-500' : 'text-red-500' ?>">
                                         R$ <?= number_format($t['valor'], 2, ',', '.') ?>
                                     </td>
                                     <td class="py-2 px-3"><?= $t['tipo'] ?></td>
@@ -352,6 +376,7 @@ if ($porcentagem >= 50) {
     </div>
 
     <!-- Scripts (mantidos iguais, apenas removi os charts duplicados que não estavam sendo usados) -->
+    <script src="../assets/js/tour.js"></script>
     <script>
         const despesas = <?= json_encode(array_values($despesasMensais)) ?>;
         const receitas = <?= json_encode(array_values($receitasMensais)) ?>;
@@ -480,4 +505,5 @@ if ($porcentagem >= 50) {
         resetText.addEventListener('click', () => { fontSize = 100; updateFontSize(); });
     </script>
 </body>
+
 </html>
