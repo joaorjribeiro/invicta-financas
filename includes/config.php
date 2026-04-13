@@ -193,3 +193,6 @@ function logError(Throwable $e, string $context = '', array $extra = []): void
 
     error_log('[DB] ' . json_encode($log, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
 }
+
+// Expõe $pdo no escopo global para compatibilidade com páginas que usam $pdo diretamente
+$pdo = getConnection();
