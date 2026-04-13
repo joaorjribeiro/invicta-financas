@@ -1,7 +1,7 @@
 <?php
-// includes/sidebar.php
-include __DIR__ . '/auth.php';
-include __DIR__ . '/config.php';
+// requires/sidebar.php
+require_once __DIR__ . '/auth.php';
+require_once __DIR__ . '/config.php';
 
 $id = $_SESSION['usuario_id'] ?? 0;
 
