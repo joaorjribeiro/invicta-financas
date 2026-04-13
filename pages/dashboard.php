@@ -189,16 +189,6 @@ if ($porcentagem >= 50) {
     ?>
 
     <div class="flex-1 flex flex-col">
-        <!-- Cards -->
-        <div class="bg-white..." data-tour="saldo"> ... </div>
-        <div class="bg-white..." data-tour="renda"> ... </div>
-        <div class="bg-white..." data-tour="limite"> ... </div>
-
-        <!-- Seções -->
-        <div class="bg-white..." data-tour="metas"> ... </div>
-        <canvas id="despesasChart" data-tour="grafico-despesas"></canvas>
-        <canvas id="receitasChart" data-tour="grafico-receitas"></canvas>
-        <div class="bg-white..." data-tour="ultimas-transacoes"> ... </div>
         <!-- Topbar -->
         <header class="bg-white dark:bg-gray-800 shadow p-4 flex justify-between items-center">
             <h2 class="text-xl font-bold">Dashboard</h2>
@@ -376,7 +366,6 @@ if ($porcentagem >= 50) {
     </div>
 
     <!-- Scripts (mantidos iguais, apenas removi os charts duplicados que não estavam sendo usados) -->
-    <script src="../assets/js/tour.js"></script>
     <script>
         const despesas = <?= json_encode(array_values($despesasMensais)) ?>;
         const receitas = <?= json_encode(array_values($receitasMensais)) ?>;
