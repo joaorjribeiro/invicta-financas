@@ -22,44 +22,47 @@ function getConnection(): PDO
 
     // Carrega variáveis de ambiente
     $config = [
-        'host'   => getenv('MYSQLHOST')     ?: '127.0.0.1',
-        'port'   => getenv('MYSQLPORT')     ?: '3306',
-        'user'   => getenv('MYSQLUSER'),
-        'pass'   => getenv('MYSQLPASSWORD'),
-        'dbname' => getenv('MYSQLDATABASE'),
+        'host' => getenv('MYSQLHOST') ?: '127.0.0.1',
+        'port' => getenv('MYSQLPORT') ?: '3306',
+        // 'user'   => getenv('MYSQLUSER'),      // Railway
+        // 'pass'   => getenv('MYSQLPASSWORD'),  // Railway
+        // 'dbname' => getenv('MYSQLDATABASE'),  // Railway
+        'user' => 'root',
+        'pass' => '',
+        'dbname' => 'invicta_financas',
     ];
 
     // Validação das variáveis obrigatórias
-    $missing = array_filter(['MYSQLUSER' => $config['user'], 'MYSQLDATABASE' => $config['dbname']], fn($v) => empty($v));
-    if (!empty($missing)) {
-        throw new RuntimeException(
-            "❌ Variáveis de ambiente não configuradas: " . implode(', ', array_keys($missing))
-        );
-    }
+    // $missing = array_filter(['MYSQLUSER' => $config['user'], 'MYSQLDATABASE' => $config['dbname']], fn($v) => empty($v));
+    // if (!empty($missing)) {
+    //     throw new RuntimeException(
+    //         "❌ Variáveis de ambiente não configuradas: " . implode(', ', array_keys($missing))
+    //     );
+    // }
 
     $dsn = "mysql:host={$config['host']};port={$config['port']};dbname={$config['dbname']};charset=utf8mb4";
 
     // PHP 8.5+: constantes PDO::MYSQL_* foram movidas para Pdo\Mysql::*
     if (PHP_VERSION_ID >= 80500) {
         $initCommandKey = Pdo\Mysql::ATTR_INIT_COMMAND;
-        $sslVerifyKey   = Pdo\Mysql::ATTR_SSL_VERIFY_SERVER_CERT;
+        $sslVerifyKey = Pdo\Mysql::ATTR_SSL_VERIFY_SERVER_CERT;
     } else {
         $initCommandKey = PDO::MYSQL_ATTR_INIT_COMMAND;
-        $sslVerifyKey   = PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT;
+        $sslVerifyKey = PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT;
     }
 
     $options = [
-        PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
         PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-        PDO::ATTR_TIMEOUT            => 8,
-        PDO::ATTR_PERSISTENT         => false,
-        PDO::ATTR_EMULATE_PREPARES   => false,
-        $initCommandKey              => "SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci",
-        $sslVerifyKey                => false, // SSL Railway sem verificação de cert
+        PDO::ATTR_TIMEOUT => 8,
+        PDO::ATTR_PERSISTENT => false,
+        PDO::ATTR_EMULATE_PREPARES => false,
+        $initCommandKey => "SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci",
+        $sslVerifyKey => false, // SSL Railway sem verificação de cert
     ];
 
-    $maxRetries    = 2;  // 2 tentativas × (8s timeout + 500ms delay) = ~17s máximo
-    $retryCount  = 0;
+    $maxRetries = 2;  // 2 tentativas × (8s timeout + 500ms delay) = ~17s máximo
+    $retryCount = 0;
     $lastException = null;
 
     while ($retryCount < $maxRetries) {
@@ -68,16 +71,16 @@ function getConnection(): PDO
             return $pdo;
 
         } catch (PDOException $e) {
-            $pdo           = null;
+            $pdo = null;
             $lastException = $e;
             $retryCount++;
 
             $isConnectionError =
                 in_array($e->getCode(), [2002, 2006, 2013]) ||
-                strpos($e->getMessage(), 'greeting packet')  !== false ||
-                strpos($e->getMessage(), 'gone away')        !== false ||
+                strpos($e->getMessage(), 'greeting packet') !== false ||
+                strpos($e->getMessage(), 'gone away') !== false ||
                 strpos($e->getMessage(), 'Connection refused') !== false ||
-                strpos($e->getMessage(), 'timed out')        !== false;
+                strpos($e->getMessage(), 'timed out') !== false;
 
             if ($isConnectionError && $retryCount < $maxRetries) {
                 usleep(500_000); // 500ms entre tentativas (Railway proxy)
@@ -89,9 +92,9 @@ function getConnection(): PDO
     }
 
     logError($lastException, "Falha ao conectar ao banco de dados", [
-        'host'  => $config['host'],
-        'port'  => $config['port'],
-        'db'    => $config['dbname'],
+        'host' => $config['host'],
+        'port' => $config['port'],
+        'db' => $config['dbname'],
         'retry' => $retryCount,
     ]);
 
@@ -104,18 +107,20 @@ function getConnection(): PDO
 function query(string $sql, array $params = [], bool $retry = true): PDOStatement
 {
     try {
-        $pdo  = getConnection();
+        $pdo = getConnection();
         $stmt = $pdo->prepare($sql);
         $stmt->execute($params);
         return $stmt;
 
     } catch (PDOException $e) {
         // Retry automático para conexão perdida (erro 2006)
-        if ($retry && (
-            $e->getCode() == 2006 ||
-            strpos($e->getMessage(), 'gone away') !== false ||
-            strpos($e->getMessage(), 'Lost connection') !== false
-        )) {
+        if (
+            $retry && (
+                $e->getCode() == 2006 ||
+                strpos($e->getMessage(), 'gone away') !== false ||
+                strpos($e->getMessage(), 'Lost connection') !== false
+            )
+        ) {
             return query($sql, $params, false);
         }
 
@@ -182,13 +187,13 @@ function logError(Throwable $e, string $context = '', array $extra = []): void
 {
     $log = [
         'timestamp' => date('Y-m-d H:i:s'),
-        'context'   => $context,
-        'error'     => $e->getMessage(),
-        'code'      => $e->getCode(),
-        'file'      => $e->getFile(),
-        'line'      => $e->getLine(),
-        'extra'     => $extra,
-        'trace'     => $e->getTraceAsString(),
+        'context' => $context,
+        'error' => $e->getMessage(),
+        'code' => $e->getCode(),
+        'file' => $e->getFile(),
+        'line' => $e->getLine(),
+        'extra' => $extra,
+        'trace' => $e->getTraceAsString(),
     ];
 
     error_log('[DB] ' . json_encode($log, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
